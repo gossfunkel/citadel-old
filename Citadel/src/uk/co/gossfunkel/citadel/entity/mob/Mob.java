@@ -19,7 +19,7 @@ public abstract class Mob extends Entity {
 	
 	public void render() {}
 
-	public void move(int xa, int ya) {
+	protected void move(int xa, int ya) {
 		if (xa != 0 && ya != 0) {
 			move(xa, 0);
 			move(0, ya);
@@ -45,6 +45,10 @@ public abstract class Mob extends Entity {
 			if (level.getTile(xt, yt).solid()) solid = true;
 		}
 		return solid;
+	}
+	
+	protected void shoot(int x, int y, double d) {
+		System.out.println("Angle: " + d);
 	}
 
 	// -------------------- getters -------------------------------------------

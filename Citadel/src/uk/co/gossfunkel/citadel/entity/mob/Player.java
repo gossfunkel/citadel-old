@@ -2,6 +2,7 @@ package uk.co.gossfunkel.citadel.entity.mob;
 
 import java.util.ArrayList;
 import uk.co.gossfunkel.citadel.input.Keyboard;
+import uk.co.gossfunkel.citadel.input.Mouse;
 import uk.co.gossfunkel.citadel.entity.Entity;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.graphics.Sprite;
@@ -63,6 +64,15 @@ public class Player extends Mob {
 			}
 		} else {
 			bPress = false;
+		}
+		
+		updateShooting();
+	}
+	
+	private void updateShooting() {
+		if (Mouse.b() == 1) {
+			shoot(x, y, Math.atan2((Mouse.y() - Game.height/2), 
+									(Mouse.x() - Game.width/2)));
 		}
 	}
 	

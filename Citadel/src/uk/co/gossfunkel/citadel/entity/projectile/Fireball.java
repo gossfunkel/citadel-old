@@ -7,7 +7,7 @@ public class Fireball extends Projectile {
 
 	public Fireball(int x, int y, double dir) {
 		super(x, y, dir);
-		range = 200;
+		range = 20;
 		speed = 5;
 		damage = 5;
 		sprite = Sprite.fireball;
@@ -17,7 +17,7 @@ public class Fireball extends Projectile {
 	}
 	
 	public void render(Screen screen) {
-		screen.renderSprite(x, y, sprite);
+		screen.renderSprite((int)x, (int)y, sprite);
 	}
 
 }

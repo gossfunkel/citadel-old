@@ -65,9 +65,9 @@ public class Player extends Mob {
 		} else {
 			bPress = false;
 		}
-		
+		clear();
 		updateShooting();
-	}
+	} // end update
 	
 	private void updateShooting() {
 		if (Mouse.b() == 1) {
@@ -107,14 +107,20 @@ public class Player extends Mob {
 				sprite = Sprite.playerE_1;
 			}
 			flip = true;
-		}
+		} // end if
 		screen.renderPlayer(x, y, sprite, flip);
-	}
+	} // end render
 	
 	// move the player to a location
 	private void teleport(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
+	
+	private void clear() {
+		for (int i = 0; i < projectiles.size(); i++) {
+			if (projectiles.get(i).isRemoved()) projectiles.remove(i);
+		} // end for
+	} // end clear
 	
 }

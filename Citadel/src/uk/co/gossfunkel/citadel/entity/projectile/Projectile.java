@@ -5,13 +5,14 @@ import uk.co.gossfunkel.citadel.graphics.Sprite;
 
 public abstract class Projectile extends Entity {
 	
-	protected final int xOrigin, yOrigin;
+	protected double x, y;
+	protected final double xOrigin, yOrigin;
 	protected double angle;
 	protected Sprite sprite;
 	protected double nx, ny;
 	protected double speed, damage, range;
 	
-	public Projectile(int x, int y, double a) {
+	public Projectile(double x, double y, double a) {
 		xOrigin = this.x = x;
 		yOrigin = this.y = y;
 		angle = a;
@@ -20,11 +21,20 @@ public abstract class Projectile extends Entity {
 	@Override
 	public void update() {
 		move();
+		if (calculateDistance() > range) {
+			this.remove();
+			// projectiles.remove();
+		}
 	}
 	
 	protected void move() {
 		x += nx;
 		y += ny;
+	}
+	
+	private double calculateDistance() {
+		return Math.sqrt(Math.abs((xOrigin - x)*(xOrigin - x) + 
+									(yOrigin - y)*(yOrigin - y)));
 	}
 
 }

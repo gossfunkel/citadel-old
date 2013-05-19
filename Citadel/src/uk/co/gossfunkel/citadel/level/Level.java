@@ -3,7 +3,6 @@ package uk.co.gossfunkel.citadel.level;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.gossfunkel.citadel.Timer;
 import uk.co.gossfunkel.citadel.entity.Entity;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.level.tile.*;
@@ -16,27 +15,23 @@ public class Level {
 	protected static int height;
 	protected static int[] tiles;
 	protected static Tile[] ttiles;
-	boolean flip = false;
-	protected Timer timer;
 	protected static List<Entity> entities = new ArrayList<Entity>();
 	
 	// -------------------- constructors --------------------------------------
 	
-	public Level(int width, int height, Timer timer) {
+	public Level(int width, int height) {
 		
 		Level.width = width;
 		Level.height = height;
 		tiles = new int[width*height];
-		this.timer = timer;
 		
 		generateLevel();
 		populate();
 		
 	}
 	
-	public Level(String path, Timer timer) {
+	public Level(String path) {
 		loadLevel(path);
-		this.timer = timer;
 		generateLevel();
 		populate();
 	}
@@ -53,18 +48,8 @@ public class Level {
 		for (int i = 0; i < entities.size(); i++) {
 			entities.get(i).update();
 		}
-		if (System.currentTimeMillis() - timer.getSecond() > 500) {
-			for (int i = 0; i < ttiles.length; i++) {
-				if (ttiles[i].equals(Tile.water1)) {
-					ttiles[i] = Tile.water2;
-				} else if (ttiles[i].equals(Tile.water2)) {
-					ttiles[i] = Tile.water1;
-				} else if (ttiles[i].equals(Tile.water3)) {
-					ttiles[i] = Tile.water4;
-				} else if (ttiles[i].equals(Tile.water4)) {
-					ttiles[i] = Tile.water3;
-				} 
-			}
+		for (int i = 0; i < ttiles.length; i++) {
+			ttiles[i].update();
 		}
 	}
 	
@@ -95,27 +80,23 @@ public class Level {
 	 * rock   = 7F7F00
 	 */
 	public Tile getTile(int x, int y) {
-		flip = !flip;
 		switch (tiles[x+y*width]) {
 			case 0xFF00FF00: return Tile.grass;
 			case 0xFFFFFF00: return Tile.flower;
 			case 0xFF7F7F00: return Tile.rock;
-			case 0xFF0000FF: if (flip) return Tile.water1; 
-								else return Tile.water3;
+			case 0xFF0000FF: return Tile.water;
 			default: return Tile.voidTile;
 		}
 	}
 	
 	protected void populate() {
 		ttiles = new Tile[tiles.length];
-		flip = !flip;
 		for(int i = 0; i < tiles.length; i++) {
 			switch (tiles[i]) {
 			case 0xFF00FF00: ttiles[i] = Tile.grass; break;
 			case 0xFFFFFF00: ttiles[i] = Tile.flower; break;
 			case 0xFF7F7F00: ttiles[i] = Tile.rock; break;
-			case 0xFF0000FF: if (flip) ttiles[i] = Tile.water1;
-								  else ttiles[i] = Tile.water3; break;
+			case 0xFF0000FF: ttiles[i] = Tile.water; break;
 			default: ttiles[i] = Tile.voidTile;
 			}
 		}

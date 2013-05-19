@@ -11,6 +11,7 @@ import java.util.List;
 //import uk.co.gossfunkel.citadel.trees.Quadtree;
 import uk.co.gossfunkel.citadel.input.*;
 import uk.co.gossfunkel.citadel.level.*;
+import uk.co.gossfunkel.citadel.level.tile.Tile;
 import uk.co.gossfunkel.citadel.entity.mob.Player;
 import uk.co.gossfunkel.citadel.entity.settlement.Settlement;/*
 import java.awt.Color;
@@ -36,10 +37,9 @@ public class Game extends Canvas implements Runnable {
 	
 	public static String title = "Citadel";
 	private Timer timer;
-	private Level level;
+	private static Level level;
 	private Player player;
 	private int xScroll, yScroll;
-	private boolean rightClickMenu;
 	//Quadtree quadtree;
 	
 	private static List<Settlement> settlements;
@@ -89,7 +89,7 @@ public class Game extends Canvas implements Runnable {
 		key = new Keyboard();
 		timer = new Timer();
 		
-		level = new SpawnLevel("/textures/garden.png", timer);		
+		level = new SpawnLevel("/textures/garden.png");		
 		//quadtree = new Quadtree(level.getWidth(), level.getHeight());
 		player = new Player(112, 50, key, timer, 16);
 		player.init(level);
@@ -186,9 +186,9 @@ public class Game extends Canvas implements Runnable {
 	@SuppressWarnings("static-access")
 	public void update() {
 		if (mouse.b() == 3) {
-			rightClickMenu = true;
+			// open right click menu
 		} else if (mouse.b() == 1) {
-			rightClickMenu = false;
+			// close right click menu
 		}
 		key.update();
 		level.update();
@@ -257,16 +257,24 @@ public class Game extends Canvas implements Runnable {
 		return height * scale;
 	}
 
+	@SuppressWarnings("unused")
 	public static void build(int xm, int ym) {
 		if (settx.contains(TileCoordinate.round(xm)) 
 				&& setty.contains(TileCoordinate.round(ym))) {
 			System.out.println("Square already filled");
 		} else {
-			Settlement genset = new Settlement(xm, ym);
-			settlements.add(genset);
-			settx.add(genset.x());
-			setty.add(genset.y());
-		}
-	}
+			if (level.getTile(TileCoordinate.scale(xm), 
+					TileCoordinate.scale(ym)).equals(Tile.water) ||
+					level.getTile(TileCoordinate.scale(xm), 
+							TileCoordinate.scale(ym)).equals(Tile.rock)) {
+				System.out.println("Illegal position");
+			} else {
+				Settlement genset = new Settlement(xm, ym);
+				settlements.add(genset);
+				settx.add(genset.x());
+				setty.add(genset.y());
+			} // end inner else
+		} // end outer else
+	} // end build
 
 }

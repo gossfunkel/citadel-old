@@ -14,4 +14,3 @@ Citadel will be a top-down, 2.5D, multiplayer strategy game.
 - farms
 - roads
 - ports
-- water

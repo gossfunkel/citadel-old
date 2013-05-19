@@ -2,8 +2,6 @@ package uk.co.gossfunkel.citadel.level;
 
 import java.util.Random;
 
-import uk.co.gossfunkel.citadel.Timer;
-
 //import uk.co.gossfunkel.citadel.graphics.Screen;
 
 public class RandomLevel extends Level {
@@ -14,8 +12,8 @@ public class RandomLevel extends Level {
 
 	// -------------------- constructors --------------------------------------
 
-	public RandomLevel(int width, int height, Timer timer) {
-		super(width, height, timer);
+	public RandomLevel(int width, int height) {
+		super(width, height);
 	}
 
 	// -------------------- methods -------------------------------------------

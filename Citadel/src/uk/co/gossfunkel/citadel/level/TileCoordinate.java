@@ -15,12 +15,16 @@ public class TileCoordinate {
 	 * round x to the scaling factor
 	 * basically makes x tile-formatted
 	 */
-	public static int round(int x) {
-		float xf = (float)x;
+	public static int round(int n) {
+		float xf = (float)n;
 		xf /= SCALE;
-		x = (int) Math.floor(xf);
-		x *= SCALE;
-		return x;
+		n = (int) Math.floor(xf);
+		n *= SCALE;
+		return n;
+	}
+	
+	public static int scale(int n) {
+		return round(n)>>4;
 	}
 	
 	public int getX() {

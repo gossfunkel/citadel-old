@@ -4,16 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-import uk.co.gossfunkel.citadel.Timer;
-
 public class SpawnLevel extends Level {
 	
 	// -------------------- variables -----------------------------------------
 
 	// -------------------- constructors --------------------------------------
 	
-	public SpawnLevel(String path, Timer timer) {
-		super(path, timer);
+	public SpawnLevel(String path) {
+		super(path);
 	}
 
 	// -------------------- methods -------------------------------------------

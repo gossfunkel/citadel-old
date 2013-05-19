@@ -29,7 +29,7 @@ public class Mouse implements MouseListener, MouseMotionListener {
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		mousex = e.getX();
-		mousex = e.getY();
+		mousey = e.getY();
 	}
 
 	@Override

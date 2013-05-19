@@ -16,6 +16,7 @@ public abstract class Mob extends Entity {
 	protected Sprite sprite;
 	protected int dir = 0;
 	protected boolean moving = false;
+	protected boolean swimming = false;
 	protected Tile[] tile;
 	
 	protected List<Projectile> projectiles = new ArrayList<Projectile>();

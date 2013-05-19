@@ -159,5 +159,11 @@ public class Level {
 	public void addEntity(Entity e) {
 		entities.add(e);
 	}
+	
+	public Tile findTileAt(int a, int b) {
+		a = TileCoordinate.scale(a);
+		b = TileCoordinate.scale(b);
+		return getTile(a, b);
+	}
 
 }

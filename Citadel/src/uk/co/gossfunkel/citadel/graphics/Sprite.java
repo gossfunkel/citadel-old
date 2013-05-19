@@ -42,6 +42,20 @@ public class Sprite {
 	public static Sprite playerE_1 = new Sprite(16, 1, 1, SpriteSheet.mobs, "PlayerSide-1");
 	// player face north
 	public static Sprite playerN_1 = new Sprite(16, 2, 1, SpriteSheet.mobs, "PlayerNorth-1");
+	
+	// player water face south
+	public static Sprite playerwetS = new Sprite(16, 0, 2, SpriteSheet.mobs, "PlayerSouthW");
+	// player water face east
+	public static Sprite playerwetE = new Sprite(16, 1, 2, SpriteSheet.mobs, "PlayerSideW");
+	// player water face north
+	public static Sprite playerwetN = new Sprite(16, 2, 2, SpriteSheet.mobs, "PlayerNorthW");
+
+	// player water face south
+	public static Sprite playerwetS_1 = new Sprite(16, 0, 3, SpriteSheet.mobs, "PlayerSouthW-1");
+	// player water face east
+	public static Sprite playerwetE_1 = new Sprite(16, 1, 3, SpriteSheet.mobs, "PlayerSideW-1");
+	// player face water north
+	public static Sprite playerwetN_1 = new Sprite(16, 2, 3, SpriteSheet.mobs, "PlayerNorthW-1");
 
 	// items ---
 	

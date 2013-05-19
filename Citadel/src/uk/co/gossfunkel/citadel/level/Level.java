@@ -108,11 +108,14 @@ public class Level {
 	
 	protected void populate() {
 		ttiles = new Tile[tiles.length];
+		flip = !flip;
 		for(int i = 0; i < tiles.length; i++) {
 			switch (tiles[i]) {
 			case 0xFF00FF00: ttiles[i] = Tile.grass; break;
 			case 0xFFFFFF00: ttiles[i] = Tile.flower; break;
 			case 0xFF7F7F00: ttiles[i] = Tile.rock; break;
+			case 0xFF0000FF: if (flip) ttiles[i] = Tile.water1;
+								  else ttiles[i] = Tile.water3; break;
 			default: ttiles[i] = Tile.voidTile;
 			}
 		}

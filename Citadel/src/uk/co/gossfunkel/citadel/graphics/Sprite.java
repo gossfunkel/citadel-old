@@ -13,10 +13,14 @@ public class Sprite {
 	// -------------------- sprites -------------------------------------------
 	
 	// tiles ---
+	public static Sprite voidSprite = new Sprite(16, 0x6495ed, "Void");
 	public static Sprite grass  = new Sprite(16, 0, 0, SpriteSheet.tiles, "GrassTile");
 	public static Sprite flower = new Sprite(16, 1, 0, SpriteSheet.tiles, "FlowerTile");
 	public static Sprite rock   = new Sprite(16, 2, 0, SpriteSheet.tiles, "RockTile");
-	public static Sprite voidSprite = new Sprite(16, 0x6495ed, "Void");
+	public static Sprite water1   = new Sprite(16, 3, 0, SpriteSheet.tiles, "WaterTile-1");
+	public static Sprite water2   = new Sprite(16, 3, 1, SpriteSheet.tiles, "WaterTile-2");
+	public static Sprite water3   = new Sprite(16, 4, 0, SpriteSheet.tiles, "WaterTile-3");
+	public static Sprite water4   = new Sprite(16, 4, 1, SpriteSheet.tiles, "WaterTile-4");
 	
 	// settlements ---
 	public static Sprite hamlet = new Sprite(16, 0, 4, SpriteSheet.tiles, "HamletTile");

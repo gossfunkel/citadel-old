@@ -2,6 +2,8 @@ package uk.co.gossfunkel.citadel.level;
 
 import java.util.Random;
 
+import uk.co.gossfunkel.citadel.Timer;
+
 //import uk.co.gossfunkel.citadel.graphics.Screen;
 
 public class RandomLevel extends Level {
@@ -12,8 +14,8 @@ public class RandomLevel extends Level {
 
 	// -------------------- constructors --------------------------------------
 
-	public RandomLevel(int width, int height) {
-		super(width, height);
+	public RandomLevel(int width, int height, Timer timer) {
+		super(width, height, timer);
 	}
 
 	// -------------------- methods -------------------------------------------
@@ -30,7 +32,7 @@ public class RandomLevel extends Level {
 	} // end generateLevel
 	
 	private int makeRandom() {
-		int num = random.nextInt(4);
+		int num = random.nextInt(6);
 		if (num == 1 || num == 2 || num == 3) {
 			num = random.nextInt(4);
 			if (num == 1 || num == 2 || num == 3) {

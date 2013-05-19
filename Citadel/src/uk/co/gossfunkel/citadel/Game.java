@@ -87,9 +87,9 @@ public class Game extends Canvas implements Runnable {
 		screen = new Screen(width, height);
 		frame = new JFrame();
 		key = new Keyboard();
-		level = new SpawnLevel("/textures/garden.png");
 		timer = new Timer();
 		
+		level = new SpawnLevel("/textures/garden.png", timer);		
 		//quadtree = new Quadtree(level.getWidth(), level.getHeight());
 		player = new Player(112, 50, key, timer, 16);
 		player.init(level);

@@ -11,11 +11,15 @@ public class Tile {
 	public Sprite sprite;
 	
 	// -------------------- tiles ---------------------------------------------
-	
+
+	public static Tile voidTile = new VoidTile(Sprite.voidSprite);
 	public static Tile grass = new GrassTile(Sprite.grass);
 	public static Tile flower = new FlowerTile(Sprite.flower);
 	public static Tile rock = new RockTile(Sprite.rock);
-	public static Tile voidTile = new VoidTile(Sprite.voidSprite);
+	public static Tile water1 = new WaterTile(Sprite.water1);
+	public static Tile water2 = new WaterTile(Sprite.water2);
+	public static Tile water3 = new WaterTile(Sprite.water3);
+	public static Tile water4 = new WaterTile(Sprite.water4);
 	
 	//settlements ---
 	public static Tile hamlet = new RockTile(Sprite.hamlet);

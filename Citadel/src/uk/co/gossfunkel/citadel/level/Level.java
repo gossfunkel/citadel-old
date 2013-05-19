@@ -3,6 +3,7 @@ package uk.co.gossfunkel.citadel.level;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.gossfunkel.citadel.Timer;
 import uk.co.gossfunkel.citadel.entity.Entity;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.level.tile.*;
@@ -15,24 +16,27 @@ public class Level {
 	protected static int height;
 	protected static int[] tiles;
 	protected static Tile[] ttiles;
+	boolean flip = false;
+	protected Timer timer;
 	protected static List<Entity> entities = new ArrayList<Entity>();
 	
 	// -------------------- constructors --------------------------------------
 	
-	public Level(int width, int height) {
+	public Level(int width, int height, Timer timer) {
 		
 		Level.width = width;
 		Level.height = height;
 		tiles = new int[width*height];
+		this.timer = timer;
 		
 		generateLevel();
 		populate();
 		
 	}
 	
-	public Level(String path) {
+	public Level(String path, Timer timer) {
 		loadLevel(path);
-		
+		this.timer = timer;
 		generateLevel();
 		populate();
 	}
@@ -48,6 +52,19 @@ public class Level {
 	public void update() {
 		for (int i = 0; i < entities.size(); i++) {
 			entities.get(i).update();
+		}
+		if (System.currentTimeMillis() - timer.getSecond() > 500) {
+			for (int i = 0; i < ttiles.length; i++) {
+				if (ttiles[i].equals(Tile.water1)) {
+					ttiles[i] = Tile.water2;
+				} else if (ttiles[i].equals(Tile.water2)) {
+					ttiles[i] = Tile.water1;
+				} else if (ttiles[i].equals(Tile.water3)) {
+					ttiles[i] = Tile.water4;
+				} else if (ttiles[i].equals(Tile.water4)) {
+					ttiles[i] = Tile.water3;
+				} 
+			}
 		}
 	}
 	
@@ -78,10 +95,13 @@ public class Level {
 	 * rock   = 7F7F00
 	 */
 	public Tile getTile(int x, int y) {
+		flip = !flip;
 		switch (tiles[x+y*width]) {
 			case 0xFF00FF00: return Tile.grass;
 			case 0xFFFFFF00: return Tile.flower;
 			case 0xFF7F7F00: return Tile.rock;
+			case 0xFF0000FF: if (flip) return Tile.water1; 
+								else return Tile.water3;
 			default: return Tile.voidTile;
 		}
 	}

@@ -1,8 +1,13 @@
 package uk.co.gossfunkel.citadel.entity.mob;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uk.co.gossfunkel.citadel.graphics.Sprite;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
 import uk.co.gossfunkel.citadel.entity.Entity;
+import uk.co.gossfunkel.citadel.entity.projectile.Fireball;
+import uk.co.gossfunkel.citadel.entity.projectile.Projectile;
 
 public abstract class Mob extends Entity {
 	
@@ -12,6 +17,8 @@ public abstract class Mob extends Entity {
 	protected int dir = 0;
 	protected boolean moving = false;
 	protected Tile[] tile;
+	
+	protected List<Projectile> projectiles = new ArrayList<Projectile>();
 	
 	// -------------------- methods -------------------------------------------
 	
@@ -48,7 +55,9 @@ public abstract class Mob extends Entity {
 	}
 	
 	protected void shoot(int x, int y, double d) {
-		System.out.println("Angle: " + d);
+		Projectile p = new Fireball(x, y, d);
+		projectiles.add(p);
+		level.addEntity(p);
 	}
 
 	// -------------------- getters -------------------------------------------

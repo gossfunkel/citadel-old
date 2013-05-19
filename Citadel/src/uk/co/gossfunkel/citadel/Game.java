@@ -47,9 +47,9 @@ public class Game extends Canvas implements Runnable {
 	private static List<Integer> setty;
 	
 	// screen dimensions (16:9) etc
-	public static int width = 300;
-	public static int height = width / 16*9;
-	public static int scale = 3;
+	private static int width = 300;
+	private static int height = width / 16*9;
+	private static int scale = 3;
 	
 	// multithreading stuff
 	private Thread thread;
@@ -191,6 +191,7 @@ public class Game extends Canvas implements Runnable {
 			rightClickMenu = false;
 		}
 		key.update();
+		level.update();
 		//quadtree.update();
 		player.update();
 		for (int i = 0; i < settlements.size(); i++) {
@@ -236,6 +237,26 @@ public class Game extends Canvas implements Runnable {
 		
 	}
 	
+	public static int width() {
+		return width;
+	}
+
+	public static int height() {
+		return height;
+	}
+
+	public static int scale() {
+		return scale;
+	}
+	
+	public static int getWindowWidth() {
+		return width * scale;
+	}
+	
+	public static int getWindowHeight() {
+		return height * scale;
+	}
+
 	public static void build(int xm, int ym) {
 		if (settx.contains(TileCoordinate.round(xm)) 
 				&& setty.contains(TileCoordinate.round(ym))) {

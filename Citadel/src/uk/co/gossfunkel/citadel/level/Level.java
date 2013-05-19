@@ -1,5 +1,8 @@
 package uk.co.gossfunkel.citadel.level;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uk.co.gossfunkel.citadel.entity.Entity;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.level.tile.*;
@@ -12,6 +15,7 @@ public class Level {
 	protected static int height;
 	protected static int[] tiles;
 	protected static Tile[] ttiles;
+	protected static List<Entity> entities = new ArrayList<Entity>();
 	
 	// -------------------- constructors --------------------------------------
 	
@@ -41,7 +45,11 @@ public class Level {
 	// load a level from file
 	protected void loadLevel(String path) {}
 	
-	public void update() {}
+	public void update() {
+		for (int i = 0; i < entities.size(); i++) {
+			entities.get(i).update();
+		}
+	}
 	
 	public void render(int xScroll, int yScroll, Screen screen) {
 		screen.setOffset(xScroll, yScroll);
@@ -59,6 +67,9 @@ public class Level {
 					ttiles[x+y*width].render(x, y, screen);
 			} // end x for
 		} // end y for} 
+		for (int i = 0; i < entities.size(); i++) {
+			entities.get(i).render(screen);
+		}
 	}
 	
 	/* translate colours into tile values
@@ -139,6 +150,10 @@ public class Level {
 	
 	public int getHeight() {
 		return height;
+	}
+	
+	public void addEntity(Entity e) {
+		entities.add(e);
 	}
 
 }

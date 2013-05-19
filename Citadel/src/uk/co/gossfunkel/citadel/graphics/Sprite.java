@@ -38,6 +38,10 @@ public class Sprite {
 	public static Sprite playerE_1 = new Sprite(16, 1, 1, SpriteSheet.mobs, "PlayerSide-1");
 	// player face north
 	public static Sprite playerN_1 = new Sprite(16, 2, 1, SpriteSheet.mobs, "PlayerNorth-1");
+
+	// items ---
+	
+	public static Sprite fireball = new Sprite(16, 0, 0, SpriteSheet.items, "Fireball");
 	
 	// -------------------- constructors --------------------------------------
 	

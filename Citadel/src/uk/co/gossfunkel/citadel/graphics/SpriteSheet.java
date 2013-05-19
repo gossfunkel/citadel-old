@@ -19,6 +19,8 @@ public class SpriteSheet {
 		= new SpriteSheet("/textures/spritesheet.png", 256);
 	public static SpriteSheet mobs
 		= new SpriteSheet("/mobs.png", 256);
+	public static SpriteSheet items
+	= new SpriteSheet("/items.png", 256);
 	
 	// -------------------- constructors --------------------------------------
 	

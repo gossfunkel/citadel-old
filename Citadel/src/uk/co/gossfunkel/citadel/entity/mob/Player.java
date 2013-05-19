@@ -71,8 +71,8 @@ public class Player extends Mob {
 	
 	private void updateShooting() {
 		if (Mouse.b() == 1) {
-			shoot(x, y, Math.atan2((Mouse.y() - Game.height/2), 
-									(Mouse.x() - Game.width/2)));
+			shoot(x, y, Math.atan2((Mouse.y() - (Game.getWindowHeight())/2), 
+									(Mouse.x() - (Game.getWindowWidth())/2)));
 		}
 	}
 	

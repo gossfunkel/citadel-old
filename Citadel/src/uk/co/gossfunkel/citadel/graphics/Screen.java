@@ -64,6 +64,30 @@ public class Screen {
 		} // end y for
 	} // end renderTile
 	
+	/* render individual tiles
+	 * 
+	 */
+	public void renderSprite(int xp, int yp, Sprite sprite) {
+		// absolute position
+		int ya, xa;
+		xp -= xOffset;
+		yp -= yOffset;
+		
+		int spriteSize = sprite.getSIZE();
+		
+		for (int y = 0; y < spriteSize; y++) {
+			ya = y + yp; 
+			for (int x = 0; x < spriteSize; x++) {
+				xa = x + xp;
+				if (xa < -spriteSize || xa >= width ||
+						    ya < 0 || ya >= height) break;
+				if (xa < 0) xa = 0;
+				if (sprite.pixels[x+y*spriteSize] != 0xffff00ff)
+					pixels[xa + ya*width] = sprite.pixels[x+y*spriteSize];
+			} // end x for
+		} // end y for
+	} // end renderTile
+	
 	/* render a player
 	 * 
 	 */

@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 //import uk.co.gossfunkel.citadel.trees.Quadtree;
@@ -100,7 +102,13 @@ public class Game extends Canvas implements Runnable {
 	
 	//@SuppressWarnings("static-access")
 	public static void main(String[] args) {
-		new Launcher();
+		try {
+			new Launcher(0);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void run() {
@@ -203,7 +211,7 @@ public class Game extends Canvas implements Runnable {
 		bs.show(); // blit/show buffer
 		
 	}
-	
+
 	public static int width() {
 		return width;
 	}

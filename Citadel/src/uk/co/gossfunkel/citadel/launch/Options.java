@@ -3,9 +3,6 @@ package uk.co.gossfunkel.citadel.launch;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import javax.swing.JButton;
 
 public class Options extends Launcher {
@@ -16,7 +13,7 @@ public class Options extends Launcher {
 	
 	private JButton ok;
 
-	public Options() throws IOException, URISyntaxException {
+	public Options() {
 		super(1);
 		setTitle("Options - Citadel");
 		setSize(new Dimension(width, height));

@@ -1,20 +1,12 @@
 package uk.co.gossfunkel.citadel.launch;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import javax.imageio.ImageIO;
+//import javax.imageio.ImageIO;
+//import java.awt.image.BufferedImage;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
@@ -27,23 +19,12 @@ public class Launcher extends JFrame {
 	protected int button_width = 80;
 	protected int button_height = 25;
 	
+	//private BufferedImage image = ImageIO.read(getClass().getResourceAsStream("/launcher_img.png"));
+	
 	protected JPanel window = new JPanel();
 	private JButton play, options, controls, quit, about;
-	
-	class ImagePanel extends JComponent {
-		private static final long serialVersionUID = 1L;
-		private Image image;
-	    public ImagePanel(Image image) {
-	        this.image = image;
-	    }
-	    @Override
-	    protected void paintComponent(Graphics g) {
-	    	super.paintComponent(g);
-	        g.drawImage(image, 0, 0, null);
-	    }
-	}
 
-	public Launcher(int id) throws IOException, URISyntaxException {
+	public Launcher(int id) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
@@ -51,13 +32,8 @@ public class Launcher extends JFrame {
 		}
 		setUndecorated(true);
 		setTitle("Citadel Launcher");
-		BufferedImage myImage = ImageIO.read(new File(
-				getClass().getResource("/launcher_img.png").toURI()));
-		JInternalFrame myJFrame = new JInternalFrame("Image pane");
-		myJFrame.setContentPane(new ImagePanel(myImage));
 		setSize(new Dimension(width, height));
 	    setDefaultCloseOperation(EXIT_ON_CLOSE);
-		getContentPane().add(myJFrame);
 		getContentPane().add(window);
 		setLocationRelativeTo(null);
 		setResizable(false);
@@ -101,19 +77,13 @@ public class Launcher extends JFrame {
 		options.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					new Options();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				} catch (URISyntaxException e1) {
-					e1.printStackTrace();
-				}
+				new Options();
 			}
 		});
 		controls.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("controls");
+				new Controls();
 			}
 		});
 		about.addActionListener(new ActionListener() {

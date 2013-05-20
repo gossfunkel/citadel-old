@@ -10,20 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 //import uk.co.gossfunkel.citadel.trees.Quadtree;
 import uk.co.gossfunkel.citadel.input.*;
+import uk.co.gossfunkel.citadel.launch.Launcher;
 import uk.co.gossfunkel.citadel.level.*;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
 import uk.co.gossfunkel.citadel.entity.mob.Player;
 import uk.co.gossfunkel.citadel.entity.settlement.Settlement;/*
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;*/
+import java.awt.Font;*/
 
-import javax.swing.JFrame;/*
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;*/
+import javax.swing.JFrame;
 
 import uk.co.gossfunkel.citadel.graphics.Screen;
 
@@ -47,9 +42,10 @@ public class Game extends Canvas implements Runnable {
 	private static List<Integer> setty;
 	
 	// screen dimensions (16:9) etc
-	private static int width = 300;
-	private static int height = width / 16*9;
-	private static int scale = 3;
+	private static int width = 500;
+	private static int height = (width / 16*9);
+	private static int gheight = height;	// for offsetting
+	private static int scale = 2;
 	
 	// multithreading stuff
 	private Thread thread;
@@ -62,14 +58,11 @@ public class Game extends Canvas implements Runnable {
 	private Mouse mouse;
 	
 	// graphics stuff
-	private JFrame frame;
-/*	private static JMenuBar menuBar;
-	private JMenu menu, submenu;
-	private JMenuItem menuItem;*/
+	public JFrame frame;
 	private BufferStrategy bs; // declared here for heap-efficiency reasons
 	private Graphics g;
 	private BufferedImage image 
-		= new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		= new BufferedImage(width, gheight, BufferedImage.TYPE_INT_RGB);
 	private int[] pixels 
 		= ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private Screen screen;
@@ -79,12 +72,9 @@ public class Game extends Canvas implements Runnable {
 	public Game() {
 		
 		Dimension size = new Dimension(width*scale, height*scale);
-		setPreferredSize(size);
-		/*menuBar = new JMenuBar();
-		menu = new JMenu();*/
+		setPreferredSize(size);		
 		
-		
-		screen = new Screen(width, height);
+		screen = new Screen(width, gheight);
 		frame = new JFrame();
 		key = new Keyboard();
 		timer = new Timer();
@@ -110,37 +100,7 @@ public class Game extends Canvas implements Runnable {
 	
 	//@SuppressWarnings("static-access")
 	public static void main(String[] args) {
-		Game game = new Game();
-		
-		game.frame.setResizable(false);
-		game.frame.setTitle(title);
-		game.frame.add(game);
-		
-		/*game.menu.setAccelerator(KeyStroke.getKeyStroke(
-				KeyEvent.VK_M, ActionEvent.ALT_MASK));
-		game.menu.getAccessibleContext().setAccessibleDescription("A Menu.");
-		game.menuItem = new JMenuItem("Some text");
-		game.menu.add(game.menuItem);
-		game.menuItem = new JMenuItem("Some more");
-		game.menu.add(game.menuItem);
-		game.menu.addSeparator();
-		game.submenu = new JMenu("A submenu");
-		game.menuItem = new JMenuItem("Stuff");
-		game.submenu.add(game.menuItem);
-		game.menuItem = new JMenuItem("More");
-		game.submenu.add(game.menuItem);
-		game.menu.add(game.submenu);
-
-		game.menuBar.add(game.menu);
-		game.frame.setJMenuBar(menuBar);*/
-		
-		game.frame.getContentPane();
-		game.frame.pack();
-		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		game.frame.setLocationRelativeTo(null);
-		game.frame.setVisible(true);
-		
-		game.start();
+		new Launcher();
 	}
 	
 	public void run() {
@@ -159,6 +119,13 @@ public class Game extends Canvas implements Runnable {
 				update();
 				timer.superTick();
 			}
+			if (timer.getFPS() > 100) {
+				try {
+					Thread.sleep(5);
+				} catch (Exception e) {
+					System.err.println("Sleeping failed: " + e);
+				}
+			} 
 			render();
 			
 		}
@@ -174,12 +141,12 @@ public class Game extends Canvas implements Runnable {
 	
 	public synchronized void stop() {
 		running = false;
-		
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
 			System.err.println("THREAD STOP ERROR - " + e);
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	
@@ -257,7 +224,6 @@ public class Game extends Canvas implements Runnable {
 		return height * scale;
 	}
 
-	@SuppressWarnings("unused")
 	public static void build(int xm, int ym) {
 		if (settx.contains(TileCoordinate.round(xm)) 
 				&& setty.contains(TileCoordinate.round(ym))) {

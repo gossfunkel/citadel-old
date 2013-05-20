@@ -50,8 +50,12 @@ public class Timer {
 		frames = 0;
 	}
 	
+	public int getFPS() {
+		return frames;
+	}
+	
 	public String returnFPS() {
-		return (updates + " ups, " + frames + " fps, ");
+		return (updates + " ups, " + frames + " fps");
 	}
 	
 	public void accumulateSecond() {

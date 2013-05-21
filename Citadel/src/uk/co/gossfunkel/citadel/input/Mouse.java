@@ -8,8 +8,8 @@ public class Mouse implements MouseListener, MouseMotionListener {
 	
 	// custom
 	
-	private static int mousex = -1;
-	private static int mousey = -1;
+	protected static int mousex = -1;
+	protected static int mousey = -1;
 	private static int mouseb = -1;
 	
 	public static int x() {

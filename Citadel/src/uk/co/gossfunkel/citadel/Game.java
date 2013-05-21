@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 //import uk.co.gossfunkel.citadel.trees.Quadtree;
@@ -99,7 +98,6 @@ public class Game extends Canvas implements Runnable {
 	
 	// -------------------- methods -------------------------------------------
 	
-	//@SuppressWarnings("static-access")
 	public static void main(String[] args) {
 		new Launcher(0);
 	}

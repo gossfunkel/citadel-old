@@ -1,16 +1,19 @@
 package uk.co.gossfunkel.citadel.launch;
 
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-//import javax.imageio.ImageIO;
-//import java.awt.image.BufferedImage;
-import javax.swing.JButton;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.image.BufferStrategy;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-public class Launcher extends JFrame {
+import uk.co.gossfunkel.citadel.input.LauncherMouse;
+
+public class Launcher extends JFrame implements Runnable {
 	private static final long serialVersionUID = 1L;
 	
 	private int width = 240;
@@ -19,10 +22,11 @@ public class Launcher extends JFrame {
 	protected int button_width = 80;
 	protected int button_height = 25;
 	
-	//private BufferedImage image = ImageIO.read(getClass().getResourceAsStream("/launcher_img.png"));
+	boolean running = true;
+	protected int wx = 20, wy = 20;
 	
+	LauncherMouse mouse = new LauncherMouse();
 	protected JPanel window = new JPanel();
-	private JButton play, options, controls, quit, about;
 
 	public Launcher(int id) {
 		try {
@@ -40,64 +44,72 @@ public class Launcher extends JFrame {
 		setVisible(true);
 		window.setLayout(null);
 
-		if (id == 0) drawButtons();
+		addMouseListener(mouse);
+		addMouseMotionListener(mouse);
 		
-		// to prevent buttons glitching out- 
-		//   effectively a refresh
-		validate();
-		repaint();
+		new Thread(this, "launcher").start();
 	}
 	
-	private void drawButtons() {
-		play = new JButton("Play");
-		options = new JButton("Options");
-		controls = new JButton("Controls");
-		about = new JButton("About");
-		quit = new JButton("Quit");
-		
-		play.setBounds((width/2)-(button_width/2),90,button_width,button_height);
-		options.setBounds((width/2)-(button_width/2),120,button_width,button_height);
-		controls.setBounds((width/2)-(button_width/2),150,button_width,button_height);
-		about.setBounds((width/2)-(button_width/2),180,button_width,button_height);
-		quit.setBounds((width/2)-(button_width/2),210,button_width,button_height);
-		
-		window.add(play);
-		window.add(options);
-		window.add(controls);
-		window.add(about);
-		window.add(quit);
-		
-		play.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new RunGame();
-				dispose();
-			}
-		});
-		options.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new Options();
-			}
-		});
-		controls.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new Controls();
-			}
-		});
-		about.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("about");
-			}
-		});
-		quit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
+	@Override
+	public void run() {
+		while (running) {
+			render();
+			update();
+		}
 	}
+	
+	private void update() {
+		if (LauncherMouse.x() > width/2 - 50 && LauncherMouse.x() < width/2 + 50) {
+			if (LauncherMouse.y() > 120 && LauncherMouse.y() < 120+35) {
+				if (LauncherMouse.isPressed()) {
+					new RunGame();
+					dispose();
+				}
+			}
+			if (LauncherMouse.y() > 235 && LauncherMouse.y() < 235+35) {
+				if (LauncherMouse.isPressed()) {
+					stop();
+				}
+			}
+		}
+		if (LauncherMouse.isPressed()) {
+			Point p = window.getLocation();
+			setLocation(p.x + LauncherMouse.x() - LauncherMouse.px(), 
+					p.y + LauncherMouse.y() - LauncherMouse.py());
+		}
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void render() {
+		BufferStrategy bs = this.getBufferStrategy();
+		if (bs == null) {
+			createBufferStrategy(3);
+			return;
+		}
+		Graphics g = bs.getDrawGraphics();
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, width, height);
+		
+		try {
+			g.drawImage(ImageIO.read(Launcher.class.getResource("/launcher/background.png")), 0, 0, width, height, null);
+			g.drawImage(ImageIO.read(Launcher.class.getResource("/launcher/play.png")), width/2 - 70, 120, 140, 35, null);
+			g.drawImage(ImageIO.read(Launcher.class.getResource("/launcher/quit.png")), width/2 - 70, 235, 140, 35, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		g.dispose();
+		bs.show();
+	}
+	
+	public void stop() {
+		running = false;
+		System.exit(0);
+	}
+	
 
 }

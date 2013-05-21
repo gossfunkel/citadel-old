@@ -5,6 +5,7 @@ import uk.co.gossfunkel.citadel.input.Keyboard;
 import uk.co.gossfunkel.citadel.input.Mouse;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
 import uk.co.gossfunkel.citadel.entity.Entity;
+//import uk.co.gossfunkel.citadel.entity.projectile.Fireball;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.graphics.Sprite;
 import uk.co.gossfunkel.citadel.Game;
@@ -19,8 +20,9 @@ public class Player extends Mob {
 	int xa, ya;
 	Sprite sprite;
 	boolean flip;
+	int fire = 10;
 	
-	private boolean bPress = false;
+	private boolean bPress = false, tPress = false;
 
 	// -------------------- constructors --------------------------------------
 	
@@ -64,20 +66,31 @@ public class Player extends Mob {
 		if (input.b){
 			if (!bPress) {
 				Game.build(x, y);
-				System.out.println("b");
 				bPress = true;
 			}
 		} else {
 			bPress = false;
 		}
+		if (input.t){
+			if (!tPress) {
+				Game.say(speak());
+				tPress = true;
+			}
+		} else {
+			tPress = false;
+		}
 		clear();
 		updateShooting();
 	} // end update
-	
+
 	private void updateShooting() {
 		if (Mouse.b() == 1) {
-			shoot(x, y, Math.atan2((Mouse.y() - (Game.getWindowHeight())/2), 
-									(Mouse.x() - (Game.getWindowWidth())/2)));
+			fire++;
+			if (fire > 10) {
+				fire = 0;
+				shoot(x, y, Math.atan2((Mouse.y() - (Game.getWindowHeight())/2), 
+						(Mouse.x() - (Game.getWindowWidth())/2)));
+			}
 		}
 	}
 	
@@ -149,6 +162,12 @@ public class Player extends Mob {
 	private void teleport(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	private String speak() {
+		String str = "";
+		//TODO str += user input until enter
+		return str;
 	}
 	
 	private void clear() {

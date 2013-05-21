@@ -14,6 +14,10 @@ public class TileCoordinate {
 	/*
 	 * round x to the scaling factor
 	 * basically makes x tile-formatted
+	 * 
+	 * DO NOT USE FOR GETTING TILE UNDER PLAYER
+	 * not accurate enough
+	 * use scale(int n)
 	 */
 	public static int round(int n) {
 		float xf = (float)n;

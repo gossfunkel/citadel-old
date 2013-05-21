@@ -11,6 +11,7 @@ public abstract class Projectile extends Entity {
 	protected Sprite sprite;
 	protected double nx, ny;
 	protected double speed, damage, range;
+	protected static double rate;
 	
 	public Projectile(double x, double y, double a) {
 		xOrigin = this.x = x;
@@ -35,6 +36,10 @@ public abstract class Projectile extends Entity {
 	private double calculateDistance() {
 		return Math.sqrt(Math.abs((xOrigin - x)*(xOrigin - x) + 
 									(yOrigin - y)*(yOrigin - y)));
+	}
+
+	public static double getRate() {
+		return rate;
 	}
 
 }

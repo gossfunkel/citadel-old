@@ -7,8 +7,8 @@ public class Keyboard implements KeyListener {
 	
 	// -------------------- variables -----------------------------------------
 	
-	private boolean[] keys = new boolean[120];
-	public boolean up, down, left, right, b;
+	private boolean[] keys = new boolean[600];
+	public boolean up, down, left, right, b, t, plus, minus;
 	
 	// -------------------- override methods ----------------------------------
 
@@ -33,7 +33,10 @@ public class Keyboard implements KeyListener {
 		down = keys[KeyEvent.VK_DOWN] || keys[KeyEvent.VK_S];
 		left = keys[KeyEvent.VK_LEFT] || keys[KeyEvent.VK_A];
 		right = keys[KeyEvent.VK_RIGHT] || keys[KeyEvent.VK_D];
+		plus  = keys[KeyEvent.VK_PLUS] || keys[KeyEvent.VK_EQUALS];
+		minus = keys[KeyEvent.VK_MINUS];
 		b = keys[KeyEvent.VK_B];
+		t = keys[KeyEvent.VK_T];
 	}
 
 }

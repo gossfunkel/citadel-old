@@ -2,25 +2,31 @@ package uk.co.gossfunkel.citadel;
 
 import java.awt.Canvas;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.List;
-//import uk.co.gossfunkel.citadel.trees.Quadtree;
-import uk.co.gossfunkel.citadel.input.*;
-import uk.co.gossfunkel.citadel.launch.Launcher;
-import uk.co.gossfunkel.citadel.level.*;
-import uk.co.gossfunkel.citadel.level.tile.Tile;
-import uk.co.gossfunkel.citadel.entity.mob.Player;
-import uk.co.gossfunkel.citadel.entity.settlement.Settlement;/*
-import java.awt.Color;
-import java.awt.Font;*/
 
 import javax.swing.JFrame;
 
+import uk.co.gossfunkel.citadel.entity.mob.Player;
+import uk.co.gossfunkel.citadel.entity.settlement.Settlement;
 import uk.co.gossfunkel.citadel.graphics.Screen;
+import uk.co.gossfunkel.citadel.input.Keyboard;
+import uk.co.gossfunkel.citadel.input.Mouse;
+import uk.co.gossfunkel.citadel.launch.Launcher;
+import uk.co.gossfunkel.citadel.level.Level;
+import uk.co.gossfunkel.citadel.level.SpawnLevel;
+import uk.co.gossfunkel.citadel.level.TileCoordinate;
+import uk.co.gossfunkel.citadel.level.tile.Tile;
+//import uk.co.gossfunkel.citadel.trees.Quadtree;
+/*
+import java.awt.Color;
+import java.awt.Font;*/
 
 /* The game's main running class
  * 
@@ -42,10 +48,9 @@ public class Game extends Canvas implements Runnable {
 	private static List<Integer> setty;
 	
 	// screen dimensions (16:9) etc
-	private static int width = 500;
+	private static int width = 1000;
 	private static int height = (width / 16*9);
-	private static int gheight = height;	// for offsetting
-	private static int scale = 2;
+	private static double scale = 1;
 	
 	// multithreading stuff
 	private Thread thread;
@@ -60,9 +65,10 @@ public class Game extends Canvas implements Runnable {
 	// graphics stuff
 	public JFrame frame;
 	private BufferStrategy bs; // declared here for heap-efficiency reasons
-	private Graphics g;
+	private Graphics2D g2d;
+	private AffineTransform transformer;
 	private BufferedImage image 
-		= new BufferedImage(width, gheight, BufferedImage.TYPE_INT_RGB);
+		= new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 	private int[] pixels 
 		= ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private Screen screen;
@@ -70,11 +76,13 @@ public class Game extends Canvas implements Runnable {
 	// -------------------- constructors --------------------------------------
 	
 	public Game() {
+	    System.setProperty("sun.java2d.opengl", "True");
 		
-		Dimension size = new Dimension(width*scale, height*scale);
+		Dimension size = new Dimension(width, height);
 		setPreferredSize(size);		
 		
-		screen = new Screen(width, gheight);
+		screen = new Screen(width, height);
+		transformer = new AffineTransform();
 		frame = new JFrame();
 		key = new Keyboard();
 		timer = new Timer();
@@ -149,14 +157,23 @@ public class Game extends Canvas implements Runnable {
 		}
 	}
 	
-	@SuppressWarnings("static-access")
 	public void update() {
-		if (mouse.b() == 3) {
+		if (Mouse.b() == 3) {
 			// open right click menu
-		} else if (mouse.b() == 1) {
+		} else if (Mouse.b() == 1) {
 			// close right click menu
 		}
 		key.update();
+		if (key.plus) {
+			if (scale < 6.0) {
+				scale += 0.1;
+			}
+		}
+		if (key.minus) {
+			if (scale > 0.0) {
+				scale -= 0.1;
+			}
+		}
 		level.update();
 		//quadtree.update();
 		player.update();
@@ -172,6 +189,9 @@ public class Game extends Canvas implements Runnable {
 			createBufferStrategy(3); // woo, triple buffering!
 			return;
 		}
+		
+		transformer.setToScale(scale, scale);
+		// translate to compensate for scaling
 		
 		screen.clear();		// remove previous data
 		xScroll = player.x() - screen.getWidth()/2;
@@ -189,18 +209,20 @@ public class Game extends Canvas implements Runnable {
 		}
 		
 		// draw
-		g = bs.getDrawGraphics();
+		g2d = (Graphics2D)bs.getDrawGraphics();
+		g2d.setTransform(transformer);
 		{
-			g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+			g2d.drawImage(image, 0, 0, width, height, null);
 			/* g.setColor(Color.WHITE);
 			 * g.setFont(new Font("Veranda", 0, 50));
 			 * g.drawString("B: " + Mouse.b(), 80, 80);
 			*/
 		}
-		g.dispose();
+		g2d.dispose();
 		
 		bs.show(); // blit/show buffer
-		
+
+		Toolkit.getDefaultToolkit().sync();
 	}
 
 	public static int width() {
@@ -211,21 +233,21 @@ public class Game extends Canvas implements Runnable {
 		return height;
 	}
 
-	public static int scale() {
+	public static double scale() {
 		return scale;
 	}
 	
 	public static int getWindowWidth() {
-		return width * scale;
+		return width;
 	}
 	
 	public static int getWindowHeight() {
-		return height * scale;
+		return height;
 	}
 
 	public static void build(int xm, int ym) {
-		if (settx.contains(TileCoordinate.round(xm)) 
-				&& setty.contains(TileCoordinate.round(ym))) {
+		if (settx.contains(TileCoordinate.scale(xm)) 
+				&& setty.contains(TileCoordinate.scale(ym))) {
 			System.out.println("Square already filled");
 		} else {
 			if (level.getTile(TileCoordinate.scale(xm), 
@@ -241,5 +263,10 @@ public class Game extends Canvas implements Runnable {
 			} // end inner else
 		} // end outer else
 	} // end build
+
+	public static void say(String str) {
+		//TODO add str to speech ArrayList
+		//TODO update speech ArrayList
+	}
 
 }

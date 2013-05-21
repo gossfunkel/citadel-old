@@ -10,6 +10,7 @@ public class Fireball extends Projectile {
 		range = 20;
 		speed = 5;
 		damage = 5;
+		rate = 3;
 		sprite = Sprite.fireball;
 		
 		nx = Math.cos(angle) * speed;

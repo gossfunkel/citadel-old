@@ -10,7 +10,6 @@ public class LauncherMouse extends Mouse {
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
-		System.out.println("pressed");
 		pressed = true;
 		mousepx = e.getX();
 		mousepy = e.getY();

@@ -27,6 +27,12 @@ public class Launcher extends JFrame implements Runnable {
 	
 	LauncherMouse mouse = new LauncherMouse();
 	protected JPanel window = new JPanel();
+	
+	private String playpath = "/launcher/play.png";
+	private String optionspath = "/launcher/options.png";
+	private String controlspath = "/launcher/controls.png";
+	private String aboutpath = "/launcher/about.png";
+	private String exitpath = "/launcher/quit.png"; //jmtb02
 
 	public Launcher(int id) {
 		try {
@@ -61,16 +67,36 @@ public class Launcher extends JFrame implements Runnable {
 	private void update() {
 		if (LauncherMouse.x() > width/2 - 50 && LauncherMouse.x() < width/2 + 50) {
 			if (LauncherMouse.y() > 120 && LauncherMouse.y() < 120+35) {
+				playpath = "/launcher/play_down.png";
 				if (LauncherMouse.isPressed()) {
 					new RunGame();
 					dispose();
 				}
-			}
-			if (LauncherMouse.y() > 235 && LauncherMouse.y() < 235+35) {
+			} else playpath = "/launcher/play.png";
+			if (LauncherMouse.y() > 155 && LauncherMouse.y() < 155+35) {
+				optionspath = "/launcher/options_down.png";
+				if (LauncherMouse.isPressed()) {
+					new Options();
+				}
+			} else optionspath = "/launcher/options.png";
+			if (LauncherMouse.y() > 190 && LauncherMouse.y() < 190+35) {
+				controlspath = "/launcher/controls_down.png";
+				if (LauncherMouse.isPressed()) {
+					new Controls();
+				}
+			} else controlspath = "/launcher/controls.png";
+			if (LauncherMouse.y() > 225 && LauncherMouse.y() < 225+35) {
+				aboutpath = "/launcher/about_down.png";
+				if (LauncherMouse.isPressed()) {
+					new About();
+				}
+			} else aboutpath = "/launcher/about.png";
+			if (LauncherMouse.y() > 260 && LauncherMouse.y() < 260+35) {
+				exitpath = "/launcher/quit_down.png";
 				if (LauncherMouse.isPressed()) {
 					stop();
 				}
-			}
+			} else exitpath = "/launcher/quit.png";
 		}
 		if (LauncherMouse.isPressed()) {
 			Point p = window.getLocation();
@@ -96,8 +122,11 @@ public class Launcher extends JFrame implements Runnable {
 		
 		try {
 			g.drawImage(ImageIO.read(Launcher.class.getResource("/launcher/background.png")), 0, 0, width, height, null);
-			g.drawImage(ImageIO.read(Launcher.class.getResource("/launcher/play.png")), width/2 - 70, 120, 140, 35, null);
-			g.drawImage(ImageIO.read(Launcher.class.getResource("/launcher/quit.png")), width/2 - 70, 235, 140, 35, null);
+			g.drawImage(ImageIO.read(Launcher.class.getResource(playpath)), width/2 - 70, 120, 140, 35, null);
+			g.drawImage(ImageIO.read(Launcher.class.getResource(optionspath)), width/2 - 70, 155, 140, 35, null);
+			g.drawImage(ImageIO.read(Launcher.class.getResource(controlspath)), width/2 - 70, 190, 140, 35, null);
+			g.drawImage(ImageIO.read(Launcher.class.getResource(aboutpath)), width/2 - 70, 225, 140, 35, null);
+			g.drawImage(ImageIO.read(Launcher.class.getResource(exitpath)), width/2 - 70, 260, 140, 35, null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

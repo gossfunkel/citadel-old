@@ -6,21 +6,43 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 
-public class Controls extends Launcher {
+public class Controls extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
 	private int width = 550;
 	private int height = 450;
 	
+	protected int button_width = 80;
+	protected int button_height = 25;
+	
+	boolean running = true;
+	protected int wx = 20, wy = 20;
+	
+	protected JPanel window = new JPanel();
+	
 	public Controls() {
-		super(1);
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			System.err.println("Failed to get system buttons: " + e);
+		}
 		setTitle("Controls - Citadel");
 		setSize(new Dimension(width, height));
+	    setDefaultCloseOperation(EXIT_ON_CLOSE);
+		getContentPane().add(window);
 		setLocationRelativeTo(null);
+		setResizable(false);
+		setVisible(true);
+		window.setLayout(null);
+		
 		drawText();
 		drawButtons();
+		
 		validate();
 		repaint();
 	}

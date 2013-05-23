@@ -10,9 +10,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JFrame;
-
 import uk.co.gossfunkel.citadel.entity.mob.Player;
 import uk.co.gossfunkel.citadel.entity.settlement.Settlement;
 import uk.co.gossfunkel.citadel.graphics.Screen;
@@ -23,10 +21,7 @@ import uk.co.gossfunkel.citadel.level.Level;
 import uk.co.gossfunkel.citadel.level.SpawnLevel;
 import uk.co.gossfunkel.citadel.level.TileCoordinate;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
-//import uk.co.gossfunkel.citadel.trees.Quadtree;
-/*
-import java.awt.Color;
-import java.awt.Font;*/
+//import lwjgl.LwjglApplicationConfiguration;
 
 /* The game's main running class
  * 

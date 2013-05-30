@@ -234,12 +234,6 @@ public class Player extends Mob {
 		screen.renderPlayer(x, y, sprite, flip);
 	} // end render
 	
-	// move the player to a location
-	private void teleport(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-	
 	private void updateSpeaking() {
 		char tmpChar = input.entered();
 		if (tmpChar != (char)0) saying += tmpChar;

@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -13,9 +14,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -23,6 +26,7 @@ import uk.co.gossfunkel.citadel.entity.mob.OnlinePlayer;
 import uk.co.gossfunkel.citadel.entity.mob.Player;
 import uk.co.gossfunkel.citadel.entity.settlement.Settlement;
 import uk.co.gossfunkel.citadel.graphics.Screen;
+import uk.co.gossfunkel.citadel.graphics.WindowHandler;
 import uk.co.gossfunkel.citadel.input.Keyboard;
 import uk.co.gossfunkel.citadel.input.Mouse;
 import uk.co.gossfunkel.citadel.launch.Launcher;
@@ -59,7 +63,7 @@ public class Game extends Canvas implements Runnable {
 	private static List<String> speech;
 	
 	// screen dimensions (16:9) etc
-	private static int width = 1000;
+	private static int width = 1024;
 	private static int height = (width / 16*9);
 	private static int scale = 1;
 	
@@ -72,7 +76,6 @@ public class Game extends Canvas implements Runnable {
 	// listeners
 	private Keyboard key;
 	private Mouse mouse;
-	private WindowHandler windowH;
 	
 	// day stuff
 	private float globalLight = 0.6f;
@@ -85,6 +88,7 @@ public class Game extends Canvas implements Runnable {
 	private int year = 0;
 	
 	// graphics stuff
+	private DisplayMode dm;
 	public JFrame frame;
 	private BufferStrategy bs; // declared here for heap-efficiency reasons
 	private Graphics2D g2d;
@@ -103,12 +107,13 @@ public class Game extends Canvas implements Runnable {
 		Dimension size = new Dimension(width, height);
 		setPreferredSize(size);		
 		
+		dm = new DisplayMode(width,height,8,DisplayMode.REFRESH_RATE_UNKNOWN);
 		screen = new Screen(width, height);
 		transformer = new AffineTransform();
 		frame = new JFrame();
 		setKey(new Keyboard());
 		setTimer(new Timer());
-		windowH = new WindowHandler(this);
+		new WindowHandler(this);
 		
 		setLevel(new SpawnLevel("/textures/garden.png"));
 		client = new GameClient(this, "localhost");
@@ -234,6 +239,10 @@ public class Game extends Canvas implements Runnable {
 			year++;
 			month = 0;
 		}
+		if (Mouse.b() == 1 && Mouse.x() > width-70 && Mouse.x() < width-35 && 
+				Mouse.y() > 0 && Mouse.y() < 17) {
+			maximise();
+		}
 		if (Mouse.b() == 3) {
 			// open right click menu
 		} else if (Mouse.b() == 1) {
@@ -340,6 +349,13 @@ public class Game extends Canvas implements Runnable {
 			//transformer.translate(width / 2, height / 2);
 			transformer.scale(scale, scale);
 			g2d.setTransform(transformer);
+
+			try {
+				//TODO: this is not visible
+				g2d.drawImage(ImageIO.read(Launcher.class.getResource("/sys.png")), width-100, 0, 100, 20, null);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                     //RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -352,6 +368,7 @@ public class Game extends Canvas implements Runnable {
 			g2d.drawImage(image, xOffset, yOffset, width, height, null);
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f - globalLight));  
 			g2d.drawImage(image2, xOffset, yOffset, width, height, null);
+			
 		}
 		g2d.dispose();
 		
@@ -468,6 +485,27 @@ public class Game extends Canvas implements Runnable {
 
 	public GameClient getClient() {
 		return client;
+	}
+	
+	public void maximise() {
+	    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+	}
+	
+	public void unmaximise() {
+	    frame.setExtendedState(frame.getExtendedState() | JFrame.NORMAL);
+	}
+
+	public void fullScreen() {
+		try {
+			screen.goFullScreen(dm, frame);
+			try {
+				Thread.sleep(3500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} finally {
+			screen.restoreScreen(frame);
+		}
 	}
 
 }

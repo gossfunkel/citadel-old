@@ -1,5 +1,12 @@
 package uk.co.gossfunkel.citadel.graphics;
 
+import java.awt.DisplayMode;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Window;
+
+import javax.swing.JFrame;
+
 import uk.co.gossfunkel.citadel.Game;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
 
@@ -157,6 +164,31 @@ public class Screen {
 
 	public int getHeight() {
 		return height;
+	}
+	
+	// -------------------- setters -------------------------------------------
+	
+	public void goFullScreen(DisplayMode dm, JFrame window) {
+		window.setUndecorated(true);
+		GraphicsDevice vc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		vc.setFullScreenWindow(window);
+		if (dm != null && vc.isDisplayChangeSupported()) {
+			try {
+				vc.setDisplayMode(dm);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void restoreScreen(JFrame window) {
+		window.setUndecorated(false);
+		GraphicsDevice vc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		Window w = vc.getFullScreenWindow();
+		if (w != null) {
+			w.dispose();
+		}
+		vc.setFullScreenWindow(null);
 	}
 	
 }

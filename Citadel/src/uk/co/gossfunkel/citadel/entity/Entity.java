@@ -50,5 +50,10 @@ public abstract class Entity {
 	public void addNear(Entity e) {
 		nearEntities.add(e);
 	}
+	
+	public void teleport(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
 
 }

@@ -39,5 +39,13 @@ public class OnlinePlayer extends Player {
 		Packet02Move packet = new Packet02Move(username, x, y);
 		packet.writeData(game.getClient());
 	}
+
+	public void setX(int n) {
+		x = n;
+	}
+
+	public void setY(int n) {
+		y = n;
+	}
 	
 }

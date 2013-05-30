@@ -60,7 +60,7 @@ public abstract class Mob extends Entity {
 	}
 	
 	protected void shoot(int x, int y, double d) {
-		Projectile p = new Fireball(x, y, d, level);
+		Projectile p = new Fireball(x + 6, y + 6, d, level);
 		projectiles.add(p);
 		level.addEntity(p);
 	}

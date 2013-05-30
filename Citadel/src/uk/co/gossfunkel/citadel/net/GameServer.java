@@ -10,10 +10,8 @@ import java.util.List;
 
 import uk.co.gossfunkel.citadel.Game;
 import uk.co.gossfunkel.citadel.entity.mob.OnlinePlayer;
-import uk.co.gossfunkel.citadel.net.packets.Packet;
+import uk.co.gossfunkel.citadel.net.packets.*;
 import uk.co.gossfunkel.citadel.net.packets.Packet.PacketTypes;
-import uk.co.gossfunkel.citadel.net.packets.Packet00Login;
-import uk.co.gossfunkel.citadel.net.packets.Packet01Disconnect;
 
 public class GameServer extends Thread {
 	
@@ -74,8 +72,30 @@ public class GameServer extends Thread {
 			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((Packet01Disconnect)packet).getUsername() + " has left.");
 			removeConnection((Packet01Disconnect)packet);
 			break;
+		case MOVE: // move the player
+			//TODO this isn't working somewhere
+			packet = new Packet02Move(data);
+			//System.out.println(((Packet02Move)packet).getUsername() + " has " 
+					//+ "moved to " + ((Packet02Move)packet).x() + ", " +
+					//((Packet02Move)packet).y() + ".");
+			this.handleMovement((Packet02Move)packet);
+			break;
 		case INVALID:
-		default: break;
+		default: //TODO complain about unrecognised format
+			break;
+		}
+	}
+
+	private void handleMovement(Packet02Move packet) {
+		String usnm = packet.getUsername();
+		if (getOnlinePlayer(usnm) != null) {
+			// player exists
+			int index = getOnlinePlayerIndex(usnm);
+			connectedPlayers.get(index).setX(packet.x());
+			connectedPlayers.get(index).setY(packet.y());
+			packet.writeData(this);
+		} else {
+			//TODO deal with it.
 		}
 	}
 

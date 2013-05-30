@@ -18,7 +18,7 @@ public class Level {
 	protected static int height;
 	protected static int[] tiles;
 	protected static Tile[] ttiles;
-	protected static List<Entity> entities = new ArrayList<Entity>();
+	protected List<Entity> entities = new ArrayList<Entity>();
 	protected static List<Tree> trees = new ArrayList<Tree>();
 	
 	// -------------------- constructors --------------------------------------
@@ -49,9 +49,9 @@ public class Level {
 	protected void loadLevel(String path) {}
 	
 	public void update() {
-		for (int i = 0; i < entities.size(); i++) {
-			if (entities.get(i).isRemoved()) entities.remove(i);
-			else entities.get(i).update();
+		for (int i = 0; i < getEntities().size(); i++) {
+			if (getEntities().get(i).isRemoved()) getEntities().remove(i);
+			else getEntities().get(i).update();
 		}
 		for (int i = 0; i < ttiles.length; i++) {
 			ttiles[i].update();
@@ -74,8 +74,8 @@ public class Level {
 					ttiles[x+y*width].render(x, y, screen);
 			} // end x for
 		} // end y for} 
-		for (int i = 0; i < entities.size(); i++) {
-			entities.get(i).render(screen);
+		for (int i = 0; i < getEntities().size(); i++) {
+			getEntities().get(i).render(screen);
 		}
 	}
 	
@@ -197,7 +197,7 @@ public class Level {
 	}
 	
 	public void addEntity(Entity e) {
-		entities.add(e);
+		getEntities().add(e);
 	}
 	
 	public Tree getTree(int i) {
@@ -252,13 +252,39 @@ public class Level {
 
 	public void removeOnlinePlayer(String username) {
 		int i = 0;
-		for (Entity e : entities) {
+		for (Entity e : getEntities()) {
 			if (e instanceof OnlinePlayer && ((OnlinePlayer)e).username().equals(username)) {
 				break;
 			}
 			i++;
 		}
-		entities.remove(i);
+		getEntities().remove(i);
+	}
+	
+	private int getOnlinePlayerIndex(String usnm) {
+		int index = 0;
+		for (Entity e: getEntities()) {
+			if (e instanceof OnlinePlayer && ((OnlinePlayer)e).username().equals(usnm)) {
+				break;
+			}
+			index++;
+		}
+		return index;
+	}
+	
+	public void movePlayer(String username, int x, int y) {
+		//TODO this is iffy as hell
+		int xa = 0, ya = 0;
+		OnlinePlayer p = (OnlinePlayer) getEntities().get(getOnlinePlayerIndex(username));
+		if (y < p.y()) ya--;
+		if (y > p.y()) ya++;
+		if (x < p.x()) xa--;
+		if (x > p.x()) xa++;
+		p.move(xa, ya);
+	}
+	
+	public synchronized List<Entity> getEntities() {
+		return this.entities;
 	}
 
 }

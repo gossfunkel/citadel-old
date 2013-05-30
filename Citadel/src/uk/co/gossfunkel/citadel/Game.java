@@ -197,7 +197,12 @@ public class Game extends Canvas implements Runnable {
 		running = false;
 		frame.dispose();
 		try {
+			if (server != null) {
+				server.exit();
+			}
+			client.exit();
 			thread.join();
+			System.exit(0);
 		} catch (InterruptedException e) {
 			System.err.println("THREAD STOP ERROR - " + e);
 			e.printStackTrace();
@@ -454,6 +459,10 @@ public class Game extends Canvas implements Runnable {
 		if (speech.size() > 3) {
 			speech.remove(0);
 		}
+	}
+	
+	public String username() {
+		return player.username();
 	}
 
 	public Level getLevel() {

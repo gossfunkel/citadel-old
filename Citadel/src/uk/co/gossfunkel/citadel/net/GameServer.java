@@ -47,6 +47,10 @@ public class GameServer extends Thread {
 		}
 	}
 	
+	public void exit() {
+		
+	}
+	
 	private void parsePacket(byte[] data, InetAddress address, int port) {
 		String message = new String(data).trim();
 		PacketTypes type;

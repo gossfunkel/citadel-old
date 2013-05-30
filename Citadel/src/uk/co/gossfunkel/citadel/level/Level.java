@@ -273,7 +273,7 @@ public class Level {
 	}
 	
 	public void movePlayer(String username, int x, int y) {
-		//TODO this is iffy as hell
+		//TODO this is broken
 		int xa = 0, ya = 0;
 		OnlinePlayer p = (OnlinePlayer) getEntities().get(getOnlinePlayerIndex(username));
 		if (y < p.y()) ya--;
@@ -281,6 +281,7 @@ public class Level {
 		if (x < p.x()) xa--;
 		if (x > p.x()) xa++;
 		p.move(xa, ya);
+		p.teleport(x, y);
 	}
 	
 	public synchronized List<Entity> getEntities() {

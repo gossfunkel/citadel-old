@@ -33,6 +33,7 @@ public class GameClient extends Thread {
 		}
 	}
 	
+	@Override
 	public void run() {
 		while (true) {
 			byte[] data = new byte[1024];
@@ -42,9 +43,20 @@ public class GameClient extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println("SERVER> " + new String(packet.getData()));
+			//System.out.println("SERVER> " + new String(packet.getData()));
 			parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
 		}
+	}
+	
+	public void exit() {
+		Packet01Disconnect p = new Packet01Disconnect(game.username());
+		p.writeData(this);
+		try {
+			this.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	private void parsePacket(byte[] data, InetAddress address, int port) {

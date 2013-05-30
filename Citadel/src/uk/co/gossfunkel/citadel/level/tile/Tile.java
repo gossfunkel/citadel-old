@@ -1,5 +1,6 @@
 package uk.co.gossfunkel.citadel.level.tile;
 
+import uk.co.gossfunkel.citadel.level.Level;
 import uk.co.gossfunkel.citadel.graphics.Sprite;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 
@@ -17,6 +18,7 @@ public class Tile {
 	public static Tile flower = new FlowerTile(Sprite.flower);
 	public static Tile rock = new RockTile(Sprite.rock);
 	public static Tile water = new WaterTile(Sprite.water1);
+	public static Tile tree = new TreeTile(Sprite.tree);
 	
 	//settlements ---
 	public static Tile hamlet = new RockTile(Sprite.hamlet);
@@ -32,6 +34,10 @@ public class Tile {
 	// -------------------- methods -------------------------------------------
 	
 	public void render(int x, int y, Screen screen) {}
+
+	public void render(Coord c, Screen screen) {
+		render(c.x, c.y, screen);
+	}
 
 	public void update() {}
 	

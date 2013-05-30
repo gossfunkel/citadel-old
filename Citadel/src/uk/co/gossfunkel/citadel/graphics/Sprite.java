@@ -21,6 +21,7 @@ public class Sprite {
 	public static Sprite water2   = new Sprite(16, 3, 1, SpriteSheet.tiles, "WaterTile-2");
 	public static Sprite water3   = new Sprite(16, 4, 0, SpriteSheet.tiles, "WaterTile-3");
 	public static Sprite water4   = new Sprite(16, 4, 1, SpriteSheet.tiles, "WaterTile-4");
+	public static Sprite tree   = new Sprite(32, 3, 0, SpriteSheet.tiles, "TreeTile");
 	
 	// settlements ---
 	public static Sprite hamlet = new Sprite(16, 0, 4, SpriteSheet.tiles, "HamletTile");
@@ -30,18 +31,18 @@ public class Sprite {
 	// mobs ---
 	
 	// player face south
-	public static Sprite playerS = new Sprite(16, 0, 0, SpriteSheet.mobs, "PlayerSouth");
+	public static Sprite playerS = new Sprite(32, 0, 0, SpriteSheet.mobs32, "PlayerSouth");
 	// player face east
-	public static Sprite playerE = new Sprite(16, 1, 0, SpriteSheet.mobs, "PlayerSide");
+	public static Sprite playerE = new Sprite(32, 1, 0, SpriteSheet.mobs32, "PlayerSide");
 	// player face north
-	public static Sprite playerN = new Sprite(16, 2, 0, SpriteSheet.mobs, "PlayerNorth");
+	public static Sprite playerN = new Sprite(32, 2, 0, SpriteSheet.mobs32, "PlayerNorth");
 
 	// player face south
-	public static Sprite playerS_1 = new Sprite(16, 0, 1, SpriteSheet.mobs, "PlayerSouth-1");
+	public static Sprite playerS_1 = new Sprite(32, 0, 1, SpriteSheet.mobs32, "PlayerSouth-1");
 	// player face east
-	public static Sprite playerE_1 = new Sprite(16, 1, 1, SpriteSheet.mobs, "PlayerSide-1");
+	public static Sprite playerE_1 = new Sprite(32, 1, 1, SpriteSheet.mobs32, "PlayerSide-1");
 	// player face north
-	public static Sprite playerN_1 = new Sprite(16, 2, 1, SpriteSheet.mobs, "PlayerNorth-1");
+	public static Sprite playerN_1 = new Sprite(32, 2, 1, SpriteSheet.mobs32, "PlayerNorth-1");
 	
 	// player water face south
 	public static Sprite playerwetS = new Sprite(16, 0, 2, SpriteSheet.mobs, "PlayerSouthW");
@@ -56,6 +57,8 @@ public class Sprite {
 	public static Sprite playerwetE_1 = new Sprite(16, 1, 3, SpriteSheet.mobs, "PlayerSideW-1");
 	// player face water north
 	public static Sprite playerwetN_1 = new Sprite(16, 2, 3, SpriteSheet.mobs, "PlayerNorthW-1");
+	
+	//TODO: add mining sprites
 
 	// items ---
 	

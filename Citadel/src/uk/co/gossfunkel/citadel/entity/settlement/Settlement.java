@@ -29,12 +29,12 @@ public class Settlement extends Entity {
 		
 	}
 	
-	protected void levelUp() {
+	public void levelUp() {
 		level++;
 		if (level%10==0) {
 			if (level == 10) {
 				sprite = Tile.village;
-			} else if (level < 30) {
+			} else if (level > 29) {
 				sprite = Tile.city;
 			}
 		}

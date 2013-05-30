@@ -18,10 +18,6 @@ public abstract class Entity {
 	
 	// -------------------- methods -------------------------------------------
 	
-	public void init(Level level) {
-		this.level = level;
-	}
-	
 	public void update() {}
 	
 	public void render(Screen screen) {}
@@ -47,6 +43,7 @@ public abstract class Entity {
 	// -------------------- setters -------------------------------------------
 
 	public void remove() {
+		// destruction animation
 		removed = true;
 	}
 	

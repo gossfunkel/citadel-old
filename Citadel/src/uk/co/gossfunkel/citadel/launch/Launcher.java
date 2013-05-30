@@ -6,8 +6,10 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferStrategy;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
@@ -16,11 +18,15 @@ import uk.co.gossfunkel.citadel.input.LauncherMouse;
 public class Launcher extends JFrame implements Runnable {
 	private static final long serialVersionUID = 1L;
 	
+	private Thread thread = new Thread(this, "launcher");
+	
 	private int width = 240;
 	private int height = 320;
 	
 	protected int button_width = 80;
 	protected int button_height = 25;
+	
+	private String username;
 	
 	boolean running = true;
 	protected int wx = 20, wy = 20;
@@ -40,6 +46,9 @@ public class Launcher extends JFrame implements Runnable {
 		} catch (Exception e) {
 			System.err.println("Failed to get system buttons: " + e);
 		}
+		username = (String)JOptionPane.showInputDialog(
+                window, "Enter username: ", "Citadel - login",
+                JOptionPane.PLAIN_MESSAGE);
 		setUndecorated(true);
 		setTitle("Citadel Launcher");
 		setSize(new Dimension(width, height));
@@ -53,7 +62,13 @@ public class Launcher extends JFrame implements Runnable {
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);
 		
-		new Thread(this, "launcher").start();
+		thread.start();
+	}
+	
+	public Launcher(String username) {
+		this.username = username;
+		new RunGame(username);
+		dispose();
 	}
 	
 	@Override
@@ -69,7 +84,7 @@ public class Launcher extends JFrame implements Runnable {
 			if (LauncherMouse.y() > 120 && LauncherMouse.y() < 120+35) {
 				playpath = "/launcher/play_down.png";
 				if (LauncherMouse.isPressed()) {
-					new RunGame();
+					new RunGame(username);
 					dispose();
 				}
 			} else playpath = "/launcher/play.png";
@@ -103,14 +118,10 @@ public class Launcher extends JFrame implements Runnable {
 			setLocation(p.x + LauncherMouse.x() - LauncherMouse.px(), 
 					p.y + LauncherMouse.y() - LauncherMouse.py());
 		}
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private void render() {
+		
 		BufferStrategy bs = this.getBufferStrategy();
 		if (bs == null) {
 			createBufferStrategy(3);
@@ -128,7 +139,7 @@ public class Launcher extends JFrame implements Runnable {
 			g.drawImage(ImageIO.read(Launcher.class.getResource(aboutpath)), width/2 - 70, 225, 140, 35, null);
 			g.drawImage(ImageIO.read(Launcher.class.getResource(exitpath)), width/2 - 70, 260, 140, 35, null);
 		} catch (IOException e) {
-			e.printStackTrace();
+			// do nothing to keep quiet on exit
 		}
 		
 		g.dispose();
@@ -137,6 +148,11 @@ public class Launcher extends JFrame implements Runnable {
 	
 	public void stop() {
 		running = false;
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		System.exit(0);
 	}
 	

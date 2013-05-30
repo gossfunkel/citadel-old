@@ -1,13 +1,13 @@
 package uk.co.gossfunkel.citadel.entity.mob;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
-
-import uk.co.gossfunkel.citadel.graphics.Sprite;
-import uk.co.gossfunkel.citadel.level.tile.Tile;
 import uk.co.gossfunkel.citadel.entity.Entity;
 import uk.co.gossfunkel.citadel.entity.projectile.Fireball;
 import uk.co.gossfunkel.citadel.entity.projectile.Projectile;
+import uk.co.gossfunkel.citadel.graphics.Sprite;
+import uk.co.gossfunkel.citadel.level.tile.Tile;
 
 public abstract class Mob extends Entity {
 	
@@ -46,17 +46,21 @@ public abstract class Mob extends Entity {
 
 	private boolean collision(int xa, int ya) {
 		boolean solid = false;
-		for (int c = 0; c < 4; c++) {
+		for (int c = 0; c < 8; c++) {
 			//                  num * scale + offset
-			int xt = ((x+xa)+ c % 2 * 6 + 4) >> 4;
-			int yt = ((y+ya)+ c / 2 * 7 + 4) >> 4;
+			int xt = ((x+xa)+ c % 2 * 14 + 8) >> 4;
+			int yt = ((y+ya)+ c / 2 * 6 + 4) >> 4;
 			if (level.getTile(xt, yt).solid()) solid = true;
+			for (int i = 0; i < level.treeLength(); i++) {
+				Rectangle rect = level.getTree(i).getRect();
+				if (rect.contains(xt, yt)) solid = true;
+			}
 		}
 		return solid;
 	}
 	
 	protected void shoot(int x, int y, double d) {
-		Projectile p = new Fireball(x, y, d);
+		Projectile p = new Fireball(x, y, d, level);
 		projectiles.add(p);
 		level.addEntity(p);
 	}

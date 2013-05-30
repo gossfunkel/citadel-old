@@ -1,5 +1,6 @@
 package uk.co.gossfunkel.citadel.graphics;
 
+import uk.co.gossfunkel.citadel.Game;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
 
 public class Screen {
@@ -13,7 +14,8 @@ public class Screen {
 
 	// for renderPlayer
 	// absolute position
-	int xa, ya, xs, ys;
+	int xa, ya, xs, ys, xp, yp;
+	double zoom;
 	int tileSize;
 	int col;
 
@@ -23,8 +25,9 @@ public class Screen {
 		
 		this.width = width;
 		this.height = height;
-		
-		pixels = new int[width*height];
+
+		zoom = Game.scale(); 
+		pixels = new int[(width*height/(int)zoom)];
 		
 	}
 	
@@ -46,20 +49,24 @@ public class Screen {
 	 */
 	public void renderTile(int xp, int yp, Tile tile) {
 		// absolute position
-		int ya, xa;
 		xp -= xOffset;
 		yp -= yOffset;
 		
+		//zoom = Game.scale(); 
+		
+		//pixels = new int[(width*height/(int)zoom)];
+		
 		int tileSize = tile.sprite.getSIZE();
 		
-		for (int y = 0; y < tileSize; y++) {
+		for (int y = 0; y < tileSize; y++ /*= zoom*/) {
 			ya = y + yp; 
-			for (int x = 0; x < tileSize; x++) {
+			for (int x = 0; x < tileSize; x++/*= zoom*/) {
 				xa = x + xp;
 				if (xa < -tileSize || xa >= width ||
 						    ya < 0 || ya >= height) break;
 				if (xa < 0) xa = 0;
-				pixels[xa + ya*width] = tile.sprite.pixels[x+y*tileSize];
+				if (tile.sprite.pixels[x+y*tileSize] != 0xffff00ff)
+					pixels[xa + ya*width] = tile.sprite.pixels[x+y*tileSize];
 			} // end x for
 		} // end y for
 	} // end renderTile
@@ -97,18 +104,17 @@ public class Screen {
 				
 		tileSize = sprite.getSIZE();
 				
-		for (int y = 0; y < tileSize; y++) {
-			ya = y + yp; 
-			ys = y;
-			for (int x = 0; x < tileSize; x++) {
-				xa = x + xp;
-				if (reflect) {
-					xs = (tileSize-1) - x;
-				} else {xs = x;}
-				if (xa < -tileSize || xa >= width ||
+		for (float y = 0; y < tileSize; y += .5) {
+			ya = (int) (Math.floor(y) + yp); 
+			ys = (int) Math.floor(y);
+			for (float x = 0; x < tileSize; x += .5) {
+				xa = (int) (Math.floor(x) + xp);
+				if (reflect) xs = (int) ((tileSize-1) - x);
+				else xs = (int) Math.floor(x);
+				if (xa < -tileSize/2 || xa >= width ||
 						    ya < 0 || ya >= height) break;
 				if (xa < 0) xa = 0;
-				col = sprite.pixels[xs+ys*tileSize];
+				col = sprite.pixels[xs+ys*(tileSize)];
 				if (col != 0xffff00ff) pixels[xa + ya*width] = col;
 			} // end x for
 		} // end y for

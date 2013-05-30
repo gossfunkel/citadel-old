@@ -6,8 +6,8 @@ import uk.co.gossfunkel.citadel.Game;
 
 public class RunGame {
 	
-	public RunGame() {
-		Game game = new Game();
+	public RunGame(String username) {
+		Game game = new Game(username);
 		
 		game.frame.setResizable(false);
 		game.frame.setTitle(Game.title);

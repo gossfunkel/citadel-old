@@ -4,13 +4,17 @@ Citadel
 Citadel will be a top-down, 2.5D, multiplayer strategy game. 
 
 ## Planned features:
-- jumping over/on rocks
+- farms
+- roads
+- ports
+- weather
 - mining
 - mountains
+- construction
+- city customisation
+- jumping over/on rocks
 - right-click menu
 - settlement menu
 - settlement growth
 - multiplayer
-- farms
-- roads
-- ports
+- 2.5D

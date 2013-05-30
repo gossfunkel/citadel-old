@@ -1,11 +1,14 @@
 package uk.co.gossfunkel.citadel.level;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
-
 import uk.co.gossfunkel.citadel.entity.Entity;
 import uk.co.gossfunkel.citadel.graphics.Screen;
-import uk.co.gossfunkel.citadel.level.tile.*;
+import uk.co.gossfunkel.citadel.level.tile.Coord;
+import uk.co.gossfunkel.citadel.level.tile.Tile;
+import uk.co.gossfunkel.citadel.entity.Tree;
+import uk.co.gossfunkel.citadel.entity.mob.OnlinePlayer;
 
 public class Level {
 	
@@ -16,6 +19,7 @@ public class Level {
 	protected static int[] tiles;
 	protected static Tile[] ttiles;
 	protected static List<Entity> entities = new ArrayList<Entity>();
+	protected static List<Tree> trees = new ArrayList<Tree>();
 	
 	// -------------------- constructors --------------------------------------
 	
@@ -46,7 +50,8 @@ public class Level {
 	
 	public void update() {
 		for (int i = 0; i < entities.size(); i++) {
-			entities.get(i).update();
+			if (entities.get(i).isRemoved()) entities.remove(i);
+			else entities.get(i).update();
 		}
 		for (int i = 0; i < ttiles.length; i++) {
 			ttiles[i].update();
@@ -74,6 +79,36 @@ public class Level {
 		}
 	}
 	
+	public void drawPanels(Screen screen) {
+		for (int i = 0; i < trees.size(); i++) {
+			trees.get(i).render(trees.get(i).getCoord(), screen, this);
+		}
+	}
+	
+	public Integer[] getCoordXs() {
+		List<Integer> coord = new ArrayList<Integer>(trees.size());
+		for (int i = 0; i < coord.size(); i++) {
+			coord.add(trees.get(i).getCoord().x());
+		}
+		return coord.toArray(new Integer[coord.size()]);
+	}
+	
+	public Integer[] getCoordYs() {
+		List<Integer> coord = new ArrayList<Integer>(trees.size());
+		for (int i = 0; i < coord.size(); i++) {
+			coord.add(trees.get(i).getCoord().y());
+		}
+		return coord.toArray(new Integer[coord.size()]);
+	}
+	
+	public Coord[] getCoords() {
+		List<Coord> coord = new ArrayList<Coord>(trees.size());
+		for (int i = 0; i < coord.size(); i++) {
+			coord.add(trees.get(i).getCoord());
+		}
+		return coord.toArray(new Coord[coord.size()]);
+	}
+	
 	/* translate colours into tile values
 	 * grass  = 00FF00
 	 * flower = FFFF00
@@ -85,26 +120,31 @@ public class Level {
 			case 0xFFFFFF00: return Tile.flower;
 			case 0xFF7F7F00: return Tile.rock;
 			case 0xFF0000FF: return Tile.water;
+			case 0xFF700000: return Tile.tree;
 			default: return Tile.voidTile;
 		}
 	}
 	
 	protected void populate() {
 		ttiles = new Tile[tiles.length];
-		for(int i = 0; i < tiles.length; i++) {
-			switch (tiles[i]) {
-			case 0xFF00FF00: ttiles[i] = Tile.grass; break;
-			case 0xFFFFFF00: ttiles[i] = Tile.flower; break;
-			case 0xFF7F7F00: ttiles[i] = Tile.rock; break;
-			case 0xFF0000FF: ttiles[i] = Tile.water; break;
-			default: ttiles[i] = Tile.voidTile;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				switch (tiles[x+y*width]) {
+				case 0xFFFFFF00: ttiles[x+y*width] = Tile.flower; break;
+				case 0xFF7F7F00: ttiles[x+y*width] = Tile.rock; break;
+				case 0xFF0000FF: ttiles[x+y*width] = Tile.water; break;
+				case 0xFF700000: trees.add(new Tree(new Coord(x, y), 
+											new Rectangle(x, y+1, 2, 1)));
+				case 0xFF00FF00: ttiles[x+y*width] = Tile.grass; break;
+				default: ttiles[x+y*width] = Tile.voidTile;
+				}
 			}
 		}
 	}
 	
 	public static Tile[] findTouching(int x, int y, int size) {
-		int x1 = TileCoordinate.round(x) >> 4;
-		int y1 = TileCoordinate.round(y) >> 4;
+		int x1 = TileCoordinate.scale(x);
+		int y1 = TileCoordinate.scale(y);
 		return new Tile[]{ttiles[x1+y1*width], ttiles[(x1+1)+y1*width], 
 				ttiles[x1+(y1+1)*width], ttiles[(x1+1)+(y1+1)*width]};
 	}
@@ -160,10 +200,65 @@ public class Level {
 		entities.add(e);
 	}
 	
+	public Tree getTree(int i) {
+		return trees.get(i);
+	}
+	
+	public Tree getTree(Coord key) {
+		for (int i = 0; i < trees.size(); i++) {
+			if (trees.get(i).getCoord().equals(key))
+				return trees.get(i);
+		}
+		return null;
+	}
+	
+	public Tree getTree(Rectangle rect) {
+		for (int i = 0; i < trees.size(); i++) {
+			if (trees.get(i).getRect().equals(rect))
+				return trees.get(i);
+		}
+		return null;
+	}
+	
+	public Tree[] getTrees() {
+		Tree[] treeArray = new Tree[trees.size()];
+		for (int i = 0; i < trees.size(); i++) {
+			treeArray[i] = trees.get(i);
+		}
+		return treeArray;
+	}
+	
+	public Rectangle[] getTreeRects() {
+		Rectangle[] treeArray = new Rectangle[trees.size()];
+		for (int i = 0; i < trees.size(); i++) {
+			treeArray[i] = trees.get(i).getRect();
+		}
+		return treeArray;
+	}
+	
+	public int treeLength() {
+		return trees.size();
+	}
+	
 	public Tile findTileAt(int a, int b) {
 		a = TileCoordinate.scale(a);
 		b = TileCoordinate.scale(b);
 		return getTile(a, b);
+	}
+	
+	public void removePanel(Coord key) {
+		trees.remove(getTree(key));
+	}
+
+	public void removeOnlinePlayer(String username) {
+		int i = 0;
+		for (Entity e : entities) {
+			if (e instanceof OnlinePlayer && ((OnlinePlayer)e).username().equals(username)) {
+				break;
+			}
+			i++;
+		}
+		entities.remove(i);
 	}
 
 }

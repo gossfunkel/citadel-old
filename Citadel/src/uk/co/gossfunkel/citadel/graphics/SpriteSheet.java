@@ -23,6 +23,8 @@ public class SpriteSheet {
 		= new SpriteSheet("/32/mobs.png", 256);
 	public static SpriteSheet items
 	= new SpriteSheet("/items.png", 256);
+	public static SpriteSheet gui 
+		= new SpriteSheet("/gui.png", 100);
 	
 	// -------------------- constructors --------------------------------------
 	

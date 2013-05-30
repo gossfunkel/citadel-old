@@ -4,7 +4,6 @@ import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Window;
-
 import javax.swing.JFrame;
 
 import uk.co.gossfunkel.citadel.Game;
@@ -156,6 +155,15 @@ public class Screen {
 		this.yOffset = yOffset;
 	}
 	
+	
+	public void renderSysMenu() {
+		for (int x = (width-100), ix = 0; x < width; x++, ix++) {
+			for (int y = 0; y < 20; y++) {
+				col = Sprite.sysMenu.pixels[ix+y*100];
+				if (col != 0xffff00ff) pixels[x+y*width] = col;
+			}
+		}
+	}
 	// -------------------- getters -------------------------------------------
 	
 	public int getWidth() {

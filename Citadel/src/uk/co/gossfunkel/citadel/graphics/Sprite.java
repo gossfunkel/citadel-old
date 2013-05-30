@@ -12,6 +12,8 @@ public class Sprite {
 	
 	// -------------------- sprites -------------------------------------------
 	
+	public static Sprite sysMenu = new Sprite(100, 0, 0, SpriteSheet.gui, "sysMenu");
+	
 	// tiles ---
 	public static Sprite voidSprite = new Sprite(16, 0x6495ed, "Void");
 	public static Sprite grass  = new Sprite(16, 0, 0, SpriteSheet.tiles, "GrassTile");

@@ -14,11 +14,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -88,6 +85,7 @@ public class Game extends Canvas implements Runnable {
 	private int year = 0;
 	
 	// graphics stuff
+	private boolean isFullscreen = false;
 	private DisplayMode dm;
 	public JFrame frame;
 	private BufferStrategy bs; // declared here for heap-efficiency reasons
@@ -111,6 +109,7 @@ public class Game extends Canvas implements Runnable {
 		screen = new Screen(width, height);
 		transformer = new AffineTransform();
 		frame = new JFrame();
+		frame.setUndecorated(true);
 		setKey(new Keyboard());
 		setTimer(new Timer());
 		new WindowHandler(this);
@@ -196,6 +195,7 @@ public class Game extends Canvas implements Runnable {
 	
 	public synchronized void stop() {
 		running = false;
+		frame.dispose();
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
@@ -239,9 +239,18 @@ public class Game extends Canvas implements Runnable {
 			year++;
 			month = 0;
 		}
+		if (Mouse.b() == 1 && Mouse.x() > width-100 && Mouse.x() < width-70 && 
+				Mouse.y() > 0 && Mouse.y() < 17) {
+			minimise();
+		}
 		if (Mouse.b() == 1 && Mouse.x() > width-70 && Mouse.x() < width-35 && 
 				Mouse.y() > 0 && Mouse.y() < 17) {
-			maximise();
+			if (isFullscreen) unmaximise();
+			else maximise();
+		}
+		if (Mouse.b() == 1 && Mouse.x() > width-35 && Mouse.x() < width && 
+				Mouse.y() > 0 && Mouse.y() < 17) {
+			stop();
 		}
 		if (Mouse.b() == 3) {
 			// open right click menu
@@ -266,7 +275,7 @@ public class Game extends Canvas implements Runnable {
 			settlements.get(i).update();
 		}
 	}
-	
+
 	public void render() {
 		
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -293,6 +302,9 @@ public class Game extends Canvas implements Runnable {
 		}
 		getPlayer().render(screen);
 		getLevel().drawPanels(screen); // draw objects to go in front of the player
+		
+		// draw minimise, maximise, quit options
+		screen.renderSysMenu();
 		
 		// draw screen.pixels to pixels
 		for (int y = 0; y < height; y++) {
@@ -343,6 +355,13 @@ public class Game extends Canvas implements Runnable {
 		
 		// draw
 		g2d = (Graphics2D)bs.getDrawGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                //RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                //RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+		g2d.setRenderingHint(
+		        RenderingHints.KEY_TEXT_ANTIALIASING,
+		        RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		//g2d.setTransform(transformer);
 		{
 			transformer.setToIdentity();
@@ -350,20 +369,6 @@ public class Game extends Canvas implements Runnable {
 			transformer.scale(scale, scale);
 			g2d.setTransform(transformer);
 
-			try {
-				//TODO: this is not visible
-				g2d.drawImage(ImageIO.read(Launcher.class.getResource("/sys.png")), width-100, 0, 100, 20, null);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                    //RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-                    //RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-			g2d.setRenderingHint(
-			        RenderingHints.KEY_TEXT_ANTIALIASING,
-			        RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, globalLight));  
 			g2d.drawImage(image, xOffset, yOffset, width, height, null);
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f - globalLight));  
@@ -487,12 +492,16 @@ public class Game extends Canvas implements Runnable {
 		return client;
 	}
 	
+	private void minimise() {
+		 frame.setExtendedState(JFrame.ICONIFIED);
+	}
+	
 	public void maximise() {
 	    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 	}
 	
 	public void unmaximise() {
-	    frame.setExtendedState(frame.getExtendedState() | JFrame.NORMAL);
+	    frame.setExtendedState(JFrame.NORMAL);
 	}
 
 	public void fullScreen() {
@@ -505,6 +514,7 @@ public class Game extends Canvas implements Runnable {
 			}
 		} finally {
 			screen.restoreScreen(frame);
+			isFullscreen = true;
 		}
 	}
 

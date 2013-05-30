@@ -24,7 +24,7 @@ public class WindowHandler implements WindowListener, WindowStateListener {
 
 	@Override
 	public void windowClosed(WindowEvent e) {
-		
+		game.stop();
 	}
 
 	@Override

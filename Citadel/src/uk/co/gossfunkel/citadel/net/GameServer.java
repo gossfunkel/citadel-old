@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,19 +17,37 @@ public class GameServer extends Thread {
 	private DatagramSocket socket;
 	private Game game;
 	private List<OnlinePlayer> connectedPlayers;
+	private boolean running = false;
 	
 	public GameServer(Game game) {
 		this.game = game;
 		try {
 			this.socket = new DatagramSocket(1042);
-		} catch (SocketException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			try {
+				this.socket = new DatagramSocket(1043);
+			} catch (Exception e1) {
+				try {
+					this.socket = new DatagramSocket(1044);
+				} catch (Exception e2) {
+					try {
+						this.socket = new DatagramSocket(1045);
+					} catch (Exception e3) {
+						e3.printStackTrace();
+					}
+				}
+			}
 		}
 		connectedPlayers = new ArrayList<OnlinePlayer>();
 	}
 	
+	@Override
+	public void start() {
+		running = true;
+	}
+	
 	public void run() {
-		while (true) {
+		while (running) {
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
@@ -48,7 +65,14 @@ public class GameServer extends Thread {
 	}
 	
 	public void exit() {
-		
+		running = false;
+		Packet01Disconnect p = new Packet01Disconnect(game.username());
+		p.writeData(this);
+		try {
+			this.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void parsePacket(byte[] data, InetAddress address, int port) {
@@ -121,15 +145,17 @@ public class GameServer extends Thread {
 
 	private void removeConnection(Packet01Disconnect packet) {
 		OnlinePlayer p = getOnlinePlayer(packet.getUsername());
-		this.connectedPlayers.remove(getOnlinePlayerIndex(p.username()));
+		if (p != null) this.connectedPlayers.remove(getOnlinePlayerIndex(p.username()));
 		packet.writeData(this); //broadcast disconnect
 	}
 	
 	private OnlinePlayer getOnlinePlayer(String usnm) {
 		for (OnlinePlayer p : connectedPlayers) {
-			if (usnm.equalsIgnoreCase(p.username())){
+			if (usnm.equalsIgnoreCase(p.username())) {
+				System.out.println(usnm + " is " + p.username());
 				return p;
 			}
+			else System.out.println(usnm + " is not " + p.username());
 		}
 		return null;
 	}

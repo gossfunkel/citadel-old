@@ -1,6 +1,5 @@
 package uk.co.gossfunkel.citadel.level.tile;
 
-import uk.co.gossfunkel.citadel.level.Level;
 import uk.co.gossfunkel.citadel.graphics.Sprite;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 

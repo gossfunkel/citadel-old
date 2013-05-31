@@ -10,12 +10,14 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -196,15 +198,21 @@ public class Game extends Canvas implements Runnable {
 	public synchronized void stop() {
 		running = false;
 		frame.dispose();
+        WindowEvent wev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 		try {
 			if (server != null) {
 				server.exit();
 			}
 			client.exit();
+			new Thread(){
+	            public void run() {
+	                System.exit(0);
+	            }
+			}.start();
 			thread.join();
-			System.exit(0);
 		} catch (InterruptedException e) {
-			System.err.println("THREAD STOP ERROR - " + e);
+			Thread.currentThread().interrupt();
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -227,11 +235,19 @@ public class Game extends Canvas implements Runnable {
 					}
 				}
 				globalLight -= 0.05f;
+				globalLight *= 100;
+				globalLight = Math.round(globalLight);
+				globalLight /= 100;
+				if (globalLight < 0.6) globalLight = .6f;
 			} 
 		} else {
 			if (getTimer().getHour() != hour) {
 				hour = getTimer().getHour();
 				globalLight += 0.05f;
+				globalLight *= 100;
+				globalLight = Math.round(globalLight);
+				globalLight /= 100;
+				if (globalLight > 1) globalLight = 1;
 			}
 		}
 		if (days == 31) {

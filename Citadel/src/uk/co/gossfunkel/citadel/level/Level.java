@@ -281,7 +281,7 @@ public class Level {
 		if (x < p.x()) xa--;
 		if (x > p.x()) xa++;
 		p.move(xa, ya);
-		p.teleport(x, y);
+		if (x != p.x() || y != p.y()) p.teleport(x, y);
 	}
 	
 	public synchronized List<Entity> getEntities() {

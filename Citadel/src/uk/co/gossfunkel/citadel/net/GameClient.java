@@ -20,6 +20,7 @@ public class GameClient extends Thread {
 	private InetAddress ip;
 	private DatagramSocket socket;
 	private Game game;
+	private boolean running = false;
 	
 	public GameClient(Game game, String ip) {
 		this.game = game;
@@ -34,8 +35,13 @@ public class GameClient extends Thread {
 	}
 	
 	@Override
+	public void start() {
+		running = true;
+	}
+	
+	@Override
 	public void run() {
-		while (true) {
+		while (running) {
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
 			try {
@@ -49,6 +55,7 @@ public class GameClient extends Thread {
 	}
 	
 	public void exit() {
+		running = false;
 		Packet01Disconnect p = new Packet01Disconnect(game.username());
 		p.writeData(this);
 		try {
@@ -56,7 +63,6 @@ public class GameClient extends Thread {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	private void parsePacket(byte[] data, InetAddress address, int port) {

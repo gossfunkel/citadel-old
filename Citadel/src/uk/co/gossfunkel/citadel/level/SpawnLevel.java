@@ -12,6 +12,8 @@ public class SpawnLevel extends Level {
 	
 	public SpawnLevel(String path) {
 		super(path);
+		spawnX = 112;
+		spawnY = 50;
 	}
 
 	// -------------------- methods -------------------------------------------

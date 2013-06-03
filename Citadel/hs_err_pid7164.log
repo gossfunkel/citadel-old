@@ -1,0 +1,94 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 32744 bytes for ChunkPool::allocate
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (allocation.cpp:211), pid=7164, tid=7424
+#
+# JRE version: 6.0_45-b06
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (20.45-b01 mixed mode windows-amd64 compressed oops)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00000000061bd800):  JavaThread "C2 CompilerThread1" daemon [_thread_in_native, id=7424, stack(0x0000000007ba0000,0x0000000007ca0000)]
+
+Stack: [0x0000000007ba0000,0x0000000007ca0000]
+
+Current CompileTask:
+C2:  32782 116  !   java.awt.Component$BltBufferStrategy.showSubRegion(IIII)V (176 bytes)
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x000000000853a000 JavaThread "Display" [_thread_in_Java, id=13108, stack(0x0000000008f80000,0x0000000009080000)]
+  0x0000000008539000 JavaThread "AWT-EventQueue-0" [_thread_blocked, id=10300, stack(0x0000000008e80000,0x0000000008f80000)]
+  0x0000000008535800 JavaThread "AWT-Shutdown" [_thread_blocked, id=13172, stack(0x0000000008080000,0x0000000008180000)]
+  0x0000000006280800 JavaThread "AWT-Windows" daemon [_thread_in_native, id=11452, stack(0x0000000008180000,0x0000000008280000)]
+  0x0000000006225000 JavaThread "Java2D Disposer" daemon [_thread_blocked, id=11236, stack(0x0000000007f80000,0x0000000008080000)]
+  0x00000000061bf800 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=10940, stack(0x0000000007ca0000,0x0000000007da0000)]
+=>0x00000000061bd800 JavaThread "C2 CompilerThread1" daemon [_thread_in_native, id=7424, stack(0x0000000007ba0000,0x0000000007ca0000)]
+  0x00000000061b9800 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=10348, stack(0x0000000007aa0000,0x0000000007ba0000)]
+  0x00000000061ab000 JavaThread "JDWP Command Reader" daemon [_thread_in_native, id=10132, stack(0x00000000079a0000,0x0000000007aa0000)]
+  0x00000000061a8000 JavaThread "JDWP Event Helper Thread" daemon [_thread_blocked, id=11020, stack(0x0000000007730000,0x0000000007830000)]
+  0x000000000619c000 JavaThread "JDWP Transport Listener: dt_socket" daemon [_thread_blocked, id=8280, stack(0x0000000007530000,0x0000000007630000)]
+  0x0000000006196000 JavaThread "Attach Listener" daemon [_thread_blocked, id=9628, stack(0x0000000006f80000,0x0000000007080000)]
+  0x0000000006195000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=11388, stack(0x0000000006e80000,0x0000000006f80000)]
+  0x0000000006138000 JavaThread "Finalizer" daemon [_thread_blocked, id=11500, stack(0x0000000006d80000,0x0000000006e80000)]
+  0x0000000006137000 JavaThread "Reference Handler" daemon [_thread_blocked, id=6956, stack(0x0000000006c80000,0x0000000006d80000)]
+  0x000000000035c800 JavaThread "main" [_thread_blocked, id=3636, stack(0x0000000002080000,0x0000000002180000)]
+
+Other Threads:
+  0x000000000612d800 VMThread [stack: 0x0000000006b80000,0x0000000006c80000] [id=8844]
+  0x00000000061d5800 WatcherThread [stack: 0x0000000007da0000,0x0000000007ea0000] [id=8104]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 197504K, used 168489K [0x00000000e0960000, 0x00000000ee720000, 0x0000000100000000)
+  eden space 185280K, 85% used [0x00000000e0960000,0x00000000ea4c2570,0x00000000ebe50000)
+  from space 12224K, 76% used [0x00000000edb30000,0x00000000ee458040,0x00000000ee720000)
+  to   space 9408K, 0% used [0x00000000ebe50000,0x00000000ebe50000,0x00000000ec780000)
+ PSOldGen        total 54848K, used 43526K [0x00000000a1c00000, 0x00000000a5190000, 0x00000000e0960000)
+  object space 54848K, 79% used [0x00000000a1c00000,0x00000000a4681b30,0x00000000a5190000)
+ PSPermGen       total 25408K, used 11234K [0x000000009ca00000, 0x000000009e2d0000, 0x00000000a1c00000)
+  object space 25408K, 44% used [0x000000009ca00000,0x000000009d4f8980,0x000000009e2d0000)
+
+Code Cache  [0x0000000002180000, 0x00000000023f0000, 0x0000000005180000)
+ total_blobs=499 nmethods=125 adapters=335 free_code_cache=49525120 largest_free_block=8192
+
+Dynamic libraries:
+0x0000000000400000 - 0x000000000042f000 	C:\Program Files\Java\jre6\bin\javaw.exe
+0x0000000076dd0000 - 0x0000000076f79000 	C:\Windows\SYSTEM32\ntdll.dll
+0x0000000076cb0000 - 0x0000000076dcf000 	C:\Windows\system32\kernel32.dll
+0x000007fefcdc0000 - 0x000007fefce2b000 	C:\Windows\system32\KERNELBASE.dll
+0x000007fefd1b0000 - 0x000007fefd28b000 	C:\Windows\system32\ADVAPI32.dll
+0x000007fefcfe0000 - 0x000007fefd07f000 	C:\Windows\system32\msvcrt.dll
+0x000007fefd130000 - 0x000007fefd14f000 	C:\Windows\SYSTEM32\sechost.dll
+0x000007fefec20000 - 0x000007fefed4d000 	C:\Windows\system32\RPCRT4.dll
+0x0000000076bb0000 - 0x0000000076caa000 	C:\Windows\system32\USER32.dll
+0x000007fefe920000 - 0x000007fefe987000 	C:\Windows\system32\GDI32.dll
+0x000007fefe990000 - 0x000007fefe99e000 	C:\Windows\system32\LPK.dll
+0x000007fefe850000 - 0x000007fefe919000 	C:\Windows\system32\USP10.dll
+0x000007feff0b0000 - 0x000007feff0de000 	C:\Windows\system32\IMM32.DLL
+0x000007fefe330000 - 0x000007fefe439000 	C:\Windows\system32\MSCTF.dll
+0x000000006d830000 - 0x000000006dfec000 	C:\Program Files\Java\jre6\bin\server\jvm.dll
+0x000007fefaa30000 - 0x000007fefaa6b000 	C:\Windows\system32\WINMM.dll
+0x000000006d7a0000 - 0x000000006d7ae000 	C:\Program Files\Java\jre6\bin\verify.dll
+0x000000006d3c0000 - 0x000000006d3e7000 	C:\Program Files\Java\jre6\bin\java.dll
+0x000000006d430000 - 0x000000006d464000 	C:\Program Files\Java\jre6\bin\jdwp.dll
+0x000000006d650000 - 0x000000006d658000 	C:\Program Files\Java\jre6\bin\npt.dll

@@ -17,12 +17,10 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import uk.co.gossfunkel.citadel.entity.mob.OnlinePlayer;
-import uk.co.gossfunkel.citadel.entity.mob.Player;
 import uk.co.gossfunkel.citadel.entity.settlement.Settlement;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.graphics.WindowHandler;
@@ -48,9 +46,8 @@ public class Game extends Canvas implements Runnable {
 	public static String title = "Citadel";
 	private Timer timer;
 	private Level level;
-	private Player player;
-	private GameClient client;
-	private GameServer server;
+	private OnlinePlayer player;
+	private String username;
 	
 	private int xScroll, yScroll, xOffset = 0, yOffset = 0;
 	boolean wasplus = false;
@@ -99,6 +96,13 @@ public class Game extends Canvas implements Runnable {
 		= ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private Screen screen;
 	
+	// net stuff
+	private GameClient client;
+	private Thread clientThread;
+	private GameServer server;
+	private Thread serverThread;
+	private String ip;
+	
 	// -------------------- constructors --------------------------------------
 	
 	public Game(String username) {
@@ -115,13 +119,8 @@ public class Game extends Canvas implements Runnable {
 		setKey(new Keyboard());
 		setTimer(new Timer());
 		new WindowHandler(this);
-		
+
 		setLevel(new SpawnLevel("/textures/garden.png"));
-		client = new GameClient(this, "localhost");
-		setPlayer(new OnlinePlayer(this, getKey(), getTimer(), username, null, -1, getLevel()));
-		Packet00Login loginPack = new Packet00Login(username);
-		if (server != null) server.addConnection((OnlinePlayer)getPlayer(), loginPack);
-		loginPack.writeData(client);
 		
 		settlements = new ArrayList<Settlement>();
 		settx = new ArrayList<Integer>();
@@ -133,6 +132,8 @@ public class Game extends Canvas implements Runnable {
 		mouse = new Mouse();
 		addMouseListener(mouse);
 		addMouseMotionListener(mouse);
+	    
+	    this.username = username;
 	}
 	
 	// -------------------- methods -------------------------------------------
@@ -148,15 +149,35 @@ public class Game extends Canvas implements Runnable {
 	
 	public synchronized void start() {
 		if (running) return;
+		
+		if (JOptionPane.showConfirmDialog(this, "Connect to a server?") == 1) {
+			server = new GameServer(this);
+			serverThread = new Thread(server, "Server");
+			serverThread.start();
+			ip = "localhost";
+
+			client = new GameClient(this, ip);
+			clientThread = new Thread(client, "Client");
+			clientThread.start();
+		} else {
+			ip = JOptionPane.showInputDialog("Connect to what server?");
+
+			client = new GameClient(this, ip);
+			clientThread = new Thread(client, "Client");
+			clientThread.start();
+
+			player = new OnlinePlayer(level.getSpawnX(), level.getSpawnY(), this, getKey(), getTimer(), username(), null, -1, getLevel());
+			
+			Packet00Login loginPack = new Packet00Login(username(), level.getSpawnX(), level.getSpawnY());
+			if (server != null) server.addConnection(getPlayer(), loginPack);
+			loginPack.writeData(client);
+		}
+		
+		client = new GameClient(this, "localhost");
+		
 		thread = new Thread(this, "Display");
 		thread.start();
 		running = true;
-		
-		if (JOptionPane.showConfirmDialog(this, "Server?") == 0) {
-			server = new GameServer(this);
-			server.start();
-		} 
-		client.start();
 
 		//client.sendData("ping".getBytes());
 	}
@@ -175,7 +196,13 @@ public class Game extends Canvas implements Runnable {
 			}
 			while (getTimer().getDelta() >= 1) {
 				// every time delta goes greater than one, update and supertick
-				update();
+				if (server != null) {
+					if (server.getPlayer() != null) {
+						update();
+					}
+				} else {
+					update();
+				}
 				getTimer().superTick();
 			}
 			if (getTimer().getFPS() > 100) {
@@ -184,15 +211,20 @@ public class Game extends Canvas implements Runnable {
 				} catch (Exception e) {
 					System.err.println("Sleeping failed: " + e);
 				}
-			} 
-			render();
+			}
+			if (server != null) {
+				if (server.getPlayer() != null) {
+					render();
+				}
+			} else {
+				render();
+			}
 			if (ticker > 30) {
 				ticker = 0;
 				getTimer().hourTick();
 			}
 			
 		}
-		stop();
 	}
 	
 	public synchronized void stop() {
@@ -291,7 +323,11 @@ public class Game extends Canvas implements Runnable {
 		}
 		getLevel().update();
 		//quadtree.update();
-		getPlayer().update();
+		if (server != null) {
+			server.getPlayer().update();
+		} else {
+			getPlayer().update();
+		}
 		for (int i = 0; i < settlements.size(); i++) {
 			settlements.get(i).update();
 		}
@@ -478,7 +514,11 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	public String username() {
-		return player.username();
+		try {
+			return player.username();
+		} catch (NullPointerException e) {
+			return username;
+		}
 	}
 
 	public Level getLevel() {
@@ -505,14 +545,14 @@ public class Game extends Canvas implements Runnable {
 		this.key = key;
 	}
 
-	public Player getPlayer() {
-		return player;
+	public OnlinePlayer getPlayer() {
+		if (server == null) {
+			return player;
+		} else {
+			return server.getPlayer();
+		}
 	}
-
-	public void setPlayer(Player player) {
-		this.player = player;
-	}
-
+	
 	public GameClient getClient() {
 		return client;
 	}
@@ -541,6 +581,10 @@ public class Game extends Canvas implements Runnable {
 			screen.restoreScreen(frame);
 			isFullscreen = true;
 		}
+	}
+
+	public Keyboard getInput() {
+		return key;
 	}
 
 }

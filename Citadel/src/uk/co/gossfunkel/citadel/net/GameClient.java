@@ -15,7 +15,7 @@ import uk.co.gossfunkel.citadel.net.packets.Packet00Login;
 import uk.co.gossfunkel.citadel.net.packets.Packet01Disconnect;
 import uk.co.gossfunkel.citadel.net.packets.Packet02Move;
 
-public class GameClient extends Thread {
+public class GameClient implements Runnable {
 	
 	private InetAddress ip;
 	private DatagramSocket socket;
@@ -30,12 +30,10 @@ public class GameClient extends Thread {
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
+			//TODO tell the user that they put an unusable address in.
+			//		in future, add a checker to ip before this is constructed
 			e.printStackTrace();
 		}
-	}
-	
-	@Override
-	public void start() {
 		running = true;
 	}
 	
@@ -58,11 +56,6 @@ public class GameClient extends Thread {
 		running = false;
 		Packet01Disconnect p = new Packet01Disconnect(game.username());
 		p.writeData(this);
-		try {
-			this.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private void parsePacket(byte[] data, InetAddress address, int port) {
@@ -73,22 +66,23 @@ public class GameClient extends Thread {
 		} catch (NumberFormatException e) {
 			type = PacketTypes.INVALID;
 		}
-		Packet packet;
 		switch (type) {
 		case LOGIN: 
-			packet = new Packet00Login(data);
-			System.out.println(((Packet00Login)packet).getUsername() + " has joined the game.");
-			OnlinePlayer player = new OnlinePlayer(game, game.getTimer(), ((Packet00Login)packet).getUsername(), address, port, game.getLevel());
+			Packet00Login packet = new Packet00Login(data);
+			System.out.println(packet.username() + " has joined the game.");
+			OnlinePlayer player = new OnlinePlayer(packet.x(), packet.y(), game,
+					game.getTimer(), ((Packet00Login)packet).username(), 
+						address, port, game.getLevel());
 			if (player != null) game.getLevel().addEntity(player);
 			break;
 		case DISCONNECT:
-			packet = new Packet01Disconnect(data);
-			System.out.println(((Packet01Disconnect)packet).getUsername() + " has left.");
-			game.getLevel().removeOnlinePlayer(((Packet01Disconnect)packet).getUsername());
+			Packet01Disconnect packet1 = new Packet01Disconnect(data);
+			System.out.println(packet1.username() + " has left.");
+			game.getLevel().removeOnlinePlayer(packet1.username());
 			break;
 		case MOVE:
-			packet = new Packet02Move(data);
-			handleMovement((Packet02Move)packet);
+			Packet02Move packet2 = new Packet02Move(data);
+			handleMovement(packet2);
 			break;
 		case INVALID:
 		default: break;
@@ -96,7 +90,7 @@ public class GameClient extends Thread {
 	}
 
 	private void handleMovement(Packet02Move packet) {
-		game.getLevel().movePlayer(packet.getUsername(), packet.x(), packet.y());
+		game.getLevel().movePlayer(packet.username(), packet.x(), packet.y());
 	}
 
 	public void sendData(byte[] data) {

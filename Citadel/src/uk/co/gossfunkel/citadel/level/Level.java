@@ -14,8 +14,8 @@ public class Level {
 	
 	// -------------------- variables -----------------------------------------
 
-	protected static int width;
-	protected static int height;
+	protected static int spawnX, spawnY;
+	protected static int width, height;
 	protected static int[] tiles;
 	protected static Tile[] ttiles;
 	protected List<Entity> entities = new ArrayList<Entity>();
@@ -286,6 +286,14 @@ public class Level {
 	
 	public synchronized List<Entity> getEntities() {
 		return this.entities;
+	}
+	
+	public int getSpawnX() {
+		return spawnX;
+	}
+	
+	public int getSpawnY() {
+		return spawnY;
 	}
 
 }

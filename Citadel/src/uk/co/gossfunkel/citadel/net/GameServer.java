@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,10 +13,11 @@ import uk.co.gossfunkel.citadel.entity.mob.OnlinePlayer;
 import uk.co.gossfunkel.citadel.net.packets.*;
 import uk.co.gossfunkel.citadel.net.packets.Packet.PacketTypes;
 
-public class GameServer extends Thread {
+public class GameServer implements Runnable {
 	
 	private DatagramSocket socket;
 	private Game game;
+	private OnlinePlayer lPlayer;
 	private List<OnlinePlayer> connectedPlayers;
 	private boolean running = false;
 	
@@ -39,14 +41,11 @@ public class GameServer extends Thread {
 			}
 		}
 		connectedPlayers = new ArrayList<OnlinePlayer>();
-	}
-	
-	@Override
-	public void start() {
 		running = true;
 	}
 	
 	public void run() {
+		System.out.println("server running");
 		while (running) {
 			byte[] data = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(data, data.length);
@@ -56,7 +55,11 @@ public class GameServer extends Thread {
 				e.printStackTrace();
 			}
 			
-			parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+			try {
+				parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+			} catch (UnknownHostException e) {
+				System.err.println("butts, it doesn't like localhost.");
+			}
 			String message = new String(packet.getData());
 			//System.out.println("CLIENT> " + new String(packet.getData()));
 			if (message.trim().equalsIgnoreCase("ping"))
@@ -68,14 +71,9 @@ public class GameServer extends Thread {
 		running = false;
 		Packet01Disconnect p = new Packet01Disconnect(game.username());
 		p.writeData(this);
-		try {
-			this.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
-	private void parsePacket(byte[] data, InetAddress address, int port) {
+	private void parsePacket(byte[] data, InetAddress address, int port) throws UnknownHostException {
 		String message = new String(data).trim();
 		PacketTypes type;
 		try {
@@ -83,30 +81,39 @@ public class GameServer extends Thread {
 		} catch (NumberFormatException e) {
 			type = PacketTypes.INVALID;
 		}
-		Packet packet;
 		switch (type) {
 		case LOGIN: // log new player in from host to new OnlinePlayer
-			packet = new Packet00Login(data);
-			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((Packet00Login)packet).getUsername() + " has connected.");
-			OnlinePlayer player = new OnlinePlayer(game, game.getTimer(), ((Packet00Login)packet).getUsername(), address, port, game.getLevel());
-			addConnection(player, ((Packet00Login)packet));
+			Packet00Login packet = new Packet00Login(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + packet.username() + " has connected.");
+			OnlinePlayer player;
+			if (game.getPlayer() == null) {
+				player = new OnlinePlayer(game.getLevel().getSpawnX(),
+					game.getLevel().getSpawnY(), game, game.getInput(), 
+					game.getTimer(), packet.username(), InetAddress.getByName("localhost"), 1042, game.getLevel());
+				lPlayer = player;
+			} else {
+				player = new OnlinePlayer(packet.x(), packet.y(), game, 
+						game.getTimer(), packet.username(), address, port, 
+						game.getLevel());
+			}
+			addConnection(player, packet);
 			if (player != null) {
 				this.connectedPlayers.add(player);
 				game.getLevel().addEntity(player);
 			}
+			//TODO add a move packet here
 			break;
 		case DISCONNECT: // remove player from connectedPlayers and game
-			packet = new Packet01Disconnect(data);
-			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + ((Packet01Disconnect)packet).getUsername() + " has left.");
-			removeConnection((Packet01Disconnect)packet);
+			Packet01Disconnect packet1 = new Packet01Disconnect(data);
+			System.out.println("[" + address.getHostAddress() + ":" + port + "] " + packet1.username() + " has left.");
+			removeConnection(packet1);
 			break;
 		case MOVE: // move the player
-			//TODO this isn't working somewhere
-			packet = new Packet02Move(data);
+			Packet02Move packet2 = new Packet02Move(data);
 			//System.out.println(((Packet02Move)packet).getUsername() + " has " 
 					//+ "moved to " + ((Packet02Move)packet).x() + ", " +
 					//((Packet02Move)packet).y() + ".");
-			this.handleMovement((Packet02Move)packet);
+			this.handleMovement(packet2);
 			break;
 		case INVALID:
 		default: //TODO complain about unrecognised format
@@ -115,7 +122,7 @@ public class GameServer extends Thread {
 	}
 
 	private void handleMovement(Packet02Move packet) {
-		String usnm = packet.getUsername();
+		String usnm = packet.username();
 		if (getOnlinePlayer(usnm) != null) {
 			// player exists
 			int index = getOnlinePlayerIndex(usnm);
@@ -139,12 +146,20 @@ public class GameServer extends Thread {
 			// if the player has not connected before, add 'em
 			this.connectedPlayers.add(player);
 			game.getLevel().addEntity(player);
-			sendData(packet.getData(), player.ip, player.port);
+			if (player.port == -1) {
+				if (player.ip == null) {
+					System.out.println("New player has given no ip");
+				} else {
+					sendData(packet.getData(), player.ip, 1042);
+				}
+			} else {
+				sendData(packet.getData(), player.ip, player.port);
+			}	
 		}
 	}
 
 	private void removeConnection(Packet01Disconnect packet) {
-		OnlinePlayer p = getOnlinePlayer(packet.getUsername());
+		OnlinePlayer p = getOnlinePlayer(packet.username());
 		if (p != null) this.connectedPlayers.remove(getOnlinePlayerIndex(p.username()));
 		packet.writeData(this); //broadcast disconnect
 	}
@@ -152,10 +167,8 @@ public class GameServer extends Thread {
 	private OnlinePlayer getOnlinePlayer(String usnm) {
 		for (OnlinePlayer p : connectedPlayers) {
 			if (usnm.equalsIgnoreCase(p.username())) {
-				System.out.println(usnm + " is " + p.username());
 				return p;
 			}
-			else System.out.println(usnm + " is not " + p.username());
 		}
 		return null;
 	}
@@ -185,6 +198,10 @@ public class GameServer extends Thread {
 		for (OnlinePlayer p : connectedPlayers) {
 			sendData(data, p.ip, p.port);
 		}
+	}
+	
+	public OnlinePlayer getPlayer() {
+		return lPlayer;
 	}
 
 }

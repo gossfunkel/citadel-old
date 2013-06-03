@@ -47,9 +47,6 @@ public class Player extends Mob {
 		SIZE = sprite.getSIZE();
 		nearEntities = new ArrayList<Entity>();
 		
-		this.x = 112;
-		this.y = 50;
-		
 		init();
 	}
 	

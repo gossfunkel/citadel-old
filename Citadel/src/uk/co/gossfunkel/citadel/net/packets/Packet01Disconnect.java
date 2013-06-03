@@ -32,7 +32,7 @@ public class Packet01Disconnect extends Packet {
 		return ("01" + this.username).getBytes();
 	}
 	
-	public String getUsername() {
+	public String username() {
 		return username;
 	}
 

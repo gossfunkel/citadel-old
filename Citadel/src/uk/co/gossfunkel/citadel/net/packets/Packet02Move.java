@@ -38,7 +38,7 @@ public class Packet02Move extends Packet {
 		return ("02" + username + "," + x + "," + y).getBytes();
 	}
 	
-	public String getUsername() {
+	public String username() {
 		return username;
 	} 
 	

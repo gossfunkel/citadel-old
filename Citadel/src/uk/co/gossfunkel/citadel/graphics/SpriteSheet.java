@@ -24,7 +24,7 @@ public class SpriteSheet {
 	public static SpriteSheet items
 	= new SpriteSheet("/items.png", 256);
 	public static SpriteSheet gui 
-		= new SpriteSheet("/gui.png", 100);
+		= new SpriteSheet("/guis/sysgui.png", 100);
 	
 	// -------------------- constructors --------------------------------------
 	

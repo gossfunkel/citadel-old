@@ -1,7 +1,6 @@
 package uk.co.gossfunkel.citadel.net.packets;
 
 import uk.co.gossfunkel.citadel.net.GameClient;
-import uk.co.gossfunkel.citadel.net.GameServer;
 
 public class Packet02Move extends Packet {
 	
@@ -11,14 +10,14 @@ public class Packet02Move extends Packet {
 	public Packet02Move(byte[] data) {
 		super(02);
 		String[] dataArray = readData(data).split(",");
-		username = dataArray[0];
-		x = Integer.parseInt(dataArray[1]);
-		y = Integer.parseInt(dataArray[2]);
+		username = dataArray[0].trim();
+		x = Integer.parseInt(dataArray[1].trim());
+		y = Integer.parseInt(dataArray[2].trim());
 	}
 	
 	public Packet02Move(String username, int x, int y) {
 		super(02);
-		this.username = username;
+		this.username = username.trim();
 		this.x = x;
 		this.y = y;
 	}
@@ -26,11 +25,6 @@ public class Packet02Move extends Packet {
 	@Override
 	public void writeData(GameClient client) {
 		client.sendData(getData());
-	}
-
-	@Override
-	public void writeData(GameServer server) {
-		server.sendDataToAllClients(getData());
 	}
 
 	@Override
@@ -48,6 +42,11 @@ public class Packet02Move extends Packet {
 	
 	public int y() {
 		return y;
+	}
+	
+	@Override
+	public String toString() {
+		return ("02" + username + "," + x + "," + y);
 	}
 
 }

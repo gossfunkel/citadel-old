@@ -126,9 +126,6 @@ public class Screen {
 		} // end y for
 	} // end renderPlayer
 	
-	/* render a player
-	 * 
-	 */
 	public void renderSettlement(int xp, int yp, Sprite sprite) {
 		// xp and yp are outside screen so not being rendered
 		xp -= xOffset;
@@ -145,7 +142,9 @@ public class Screen {
 						    ya < 0 || ya >= height) break;
 				if (xa < 0) xa = 0;
 				col = sprite.pixels[x+y*tileSize];
-				if (col != 0xffff00ff) pixels[xa + ya*width] = col;
+				if (col != 0xffff00ff) {
+					pixels[xa + ya*width] = col;
+				}
 			} // end x for
 		} // end y for
 	} // end renderSettlement
@@ -155,7 +154,6 @@ public class Screen {
 		this.yOffset = yOffset;
 	}
 	
-	
 	public void renderSysMenu() {
 		for (int x = (width-100), ix = 0; x < width; x++, ix++) {
 			for (int y = 0; y < 20; y++) {
@@ -164,6 +162,7 @@ public class Screen {
 			}
 		}
 	}
+	
 	// -------------------- getters -------------------------------------------
 	
 	public int getWidth() {

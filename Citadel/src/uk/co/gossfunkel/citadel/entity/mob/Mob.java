@@ -48,8 +48,8 @@ public abstract class Mob extends Entity {
 		boolean solid = false;
 		for (int c = 0; c < 8; c++) {
 			//                  num * scale + offset
-			int xt = ((x+xa)+ c % 2 * 14 + 8) >> 4;
-			int yt = ((y+ya)+ c / 2 * 6 + 4) >> 4;
+			int xt = ((x+xa)+ c % 2 * 14 + 8) >> 5;
+			int yt = ((y+ya)+ c / 2 * 6 + 4) >> 5;
 			if (level.getTile(xt, yt).solid()) solid = true;
 			for (int i = 0; i < level.treeLength(); i++) {
 				Rectangle rect = level.getTree(i).getRect();

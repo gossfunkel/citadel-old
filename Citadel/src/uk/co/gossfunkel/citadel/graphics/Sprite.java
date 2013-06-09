@@ -15,20 +15,25 @@ public class Sprite {
 	public static Sprite sysMenu = new Sprite(100, 0, 0, SpriteSheet.gui, "sysMenu");
 	
 	// tiles ---
-	public static Sprite voidSprite = new Sprite(16, 0x6495ed, "Void");
-	public static Sprite grass  = new Sprite(16, 0, 0, SpriteSheet.tiles, "GrassTile");
-	public static Sprite flower = new Sprite(16, 1, 0, SpriteSheet.tiles, "FlowerTile");
-	public static Sprite rock   = new Sprite(16, 2, 0, SpriteSheet.tiles, "RockTile");
-	public static Sprite water1   = new Sprite(16, 3, 0, SpriteSheet.tiles, "WaterTile-1");
-	public static Sprite water2   = new Sprite(16, 3, 1, SpriteSheet.tiles, "WaterTile-2");
-	public static Sprite water3   = new Sprite(16, 4, 0, SpriteSheet.tiles, "WaterTile-3");
-	public static Sprite water4   = new Sprite(16, 4, 1, SpriteSheet.tiles, "WaterTile-4");
-	public static Sprite tree   = new Sprite(32, 3, 0, SpriteSheet.tiles, "TreeTile");
+	public static Sprite voidSprite = new Sprite(32, 0x6495ed, "Void");
+	public static Sprite grass  	= new Sprite(32, 0, 0, SpriteSheet.tiles, "GrassTile");
+	public static Sprite flower 	= new Sprite(32, 1, 0, SpriteSheet.tiles, "FlowerTile");
+	public static Sprite rock   	= new Sprite(32, 2, 0, SpriteSheet.tiles, "RockTile");
+	public static Sprite water1 	= new Sprite(32, 3, 0, SpriteSheet.tiles, "WaterTile-1");
+	public static Sprite water2 	= new Sprite(32, 3, 1, SpriteSheet.tiles, "WaterTile-2");
+	public static Sprite water3 	= new Sprite(32, 4, 0, SpriteSheet.tiles, "WaterTile-3");
+	public static Sprite water4		= new Sprite(32, 4, 1, SpriteSheet.tiles, "WaterTile-4");
+	public static Sprite tree   	= new Sprite(32, 5, 0, SpriteSheet.tiles, "TreeTile");
 	
 	// settlements ---
-	public static Sprite hamlet = new Sprite(16, 0, 4, SpriteSheet.tiles, "HamletTile");
-	public static Sprite village = new Sprite(16, 1, 4, SpriteSheet.tiles, "VillageTile");
-	public static Sprite city = new Sprite(32, 2, 4, SpriteSheet.tiles, "CityTile");
+	public static Sprite construction1 = new Sprite(32, 3, 2, SpriteSheet.tiles, "ConstructionTile-1");
+	public static Sprite construction2 = new Sprite(32, 3, 3, SpriteSheet.tiles, "ConstructionTile-2");
+	public static Sprite hamlet 	  = new Sprite(32, 0, 2, SpriteSheet.tiles, "HamletTile");
+	public static Sprite village 	  = new Sprite(32, 1, 2, SpriteSheet.tiles, "VillageTile");
+	public static Sprite city 		  = new Sprite(32, 2, 2, SpriteSheet.tiles, "CityTile");
+	public static Sprite movhamlet 	  = new Sprite(32, 0, 3, SpriteSheet.tiles, "HamletTile-MouseOver");
+	public static Sprite movvillage   = new Sprite(32, 1, 3, SpriteSheet.tiles, "VillageTile-MouseOver");
+	public static Sprite movcity 	  = new Sprite(32, 2, 3, SpriteSheet.tiles, "CityTile-MouseOver");
 	
 	// mobs ---
 	

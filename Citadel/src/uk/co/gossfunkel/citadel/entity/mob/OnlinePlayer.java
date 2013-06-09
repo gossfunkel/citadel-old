@@ -18,7 +18,6 @@ public class OnlinePlayer extends Player {
 		super(game, input, timer, username, level);
 		this.ip = ip;
 		this.port = port;
-		Thread.dumpStack();
 	}
 
 	public OnlinePlayer(Game game, Timer timer, String username,
@@ -26,7 +25,6 @@ public class OnlinePlayer extends Player {
 		super(game, null, timer, username, level);
 		this.ip = ip;
 		this.port = port;
-		Thread.dumpStack();
 	}
 	
 	// spawn locale constructor
@@ -54,14 +52,6 @@ public class OnlinePlayer extends Player {
 		super.move(xa, ya);
 		Packet02Move packet = new Packet02Move(username, xa, ya);
 		packet.writeData(game.getClient());
-	}
-
-	public void setX(int n) {
-		x = n;
-	}
-
-	public void setY(int n) {
-		y = n;
 	}
 	
 }

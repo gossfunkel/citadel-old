@@ -247,4 +247,11 @@ public class Player extends Mob {
 		return username;
 	}
 	
+	public String toString() {
+		String string = "";
+		string += username();
+		string += "; " + x + ", " + y;
+		return string;
+	}
+	
 }

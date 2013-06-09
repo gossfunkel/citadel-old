@@ -20,6 +20,8 @@ public class Tile {
 	public static Tile tree = new TreeTile(Sprite.tree);
 	
 	//settlements ---
+	public static Tile construction1 = new RockTile(Sprite.construction1);
+	public static Tile construction2 = new RockTile(Sprite.construction2);
 	public static Tile hamlet = new RockTile(Sprite.hamlet);
 	public static Tile village = new RockTile(Sprite.village);
 	public static Tile city = new RockTile(Sprite.city);

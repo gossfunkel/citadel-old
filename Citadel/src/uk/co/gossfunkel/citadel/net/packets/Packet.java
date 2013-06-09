@@ -1,12 +1,11 @@
 package uk.co.gossfunkel.citadel.net.packets;
 
 import uk.co.gossfunkel.citadel.net.GameClient;
-import uk.co.gossfunkel.citadel.net.GameServer;
 
 public abstract class Packet {
 
 	public static enum PacketTypes {
-		INVALID(-1), LOGIN(00), DISCONNECT(01), MOVE(02);
+		INVALID(-1), LOGIN(00), DISCONNECT(01), MOVE(02), SAY(03), SETTLEMENT(04);
 		
 		private int packetId;
 		private PacketTypes(int pid) {
@@ -25,7 +24,6 @@ public abstract class Packet {
 	}
 	
 	public abstract void writeData(GameClient client);
-	public abstract void writeData(GameServer server);
 	public abstract byte[] getData();
 	
 	public String readData(byte[] data) {
@@ -48,6 +46,11 @@ public abstract class Packet {
 			}
 		}
 		return PacketTypes.INVALID;
+	}
+	
+	@Override
+	public String toString() {
+		return "PACKET";
 	}
 	
 }

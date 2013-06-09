@@ -28,7 +28,7 @@ public class TileCoordinate {
 	}
 	
 	public static int scale(int n) {
-		return round(n)>>4;
+		return round(n)>>5;
 	}
 	
 	public int getX() {

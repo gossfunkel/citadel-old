@@ -1,7 +1,6 @@
 package uk.co.gossfunkel.citadel.net.packets;
 
 import uk.co.gossfunkel.citadel.net.GameClient;
-import uk.co.gossfunkel.citadel.net.GameServer;
 
 public class Packet01Disconnect extends Packet {
 	
@@ -23,17 +22,17 @@ public class Packet01Disconnect extends Packet {
 	}
 
 	@Override
-	public void writeData(GameServer server) {
-		server.sendDataToAllClients(getData());
-	}
-
-	@Override
 	public byte[] getData() {
-		return ("01" + this.username).getBytes();
+		return ("01" + username).getBytes();
 	}
 	
 	public String username() {
 		return username;
+	}
+	
+	@Override
+	public String toString() {
+		return ("02" + username);
 	}
 
 }

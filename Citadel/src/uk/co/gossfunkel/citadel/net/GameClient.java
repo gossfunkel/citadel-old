@@ -25,7 +25,7 @@ public class GameClient implements Runnable {
 	public GameClient(Game game, String ip) {
 		this.game = game;
 		try {
-			this.socket = new DatagramSocket();
+			socket = new DatagramSocket();
 			this.ip = InetAddress.getByName(ip);
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -34,6 +34,9 @@ public class GameClient implements Runnable {
 			//		in future, add a checker to ip before this is constructed
 			e.printStackTrace();
 		}
+		
+		socket.connect(this.ip, 1042);
+		
 		running = true;
 	}
 	

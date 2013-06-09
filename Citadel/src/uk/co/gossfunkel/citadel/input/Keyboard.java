@@ -8,7 +8,7 @@ public class Keyboard implements KeyListener {
 	// -------------------- variables -----------------------------------------
 	
 	private boolean[] keys = new boolean[600];
-	public boolean up, down, left, right, plus, minus, enter;
+	public boolean up, down, left, right, plus, minus, enter, esc;
 	public boolean space, comma, fullStop, shift;
 	public boolean a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, 
 		u, v, w, x, y, z;
@@ -33,6 +33,7 @@ public class Keyboard implements KeyListener {
 	// -------------------- methods -------------------------------------------
 	
 	public void update() {
+		esc = keys[KeyEvent.VK_ESCAPE];
 		up = keys[KeyEvent.VK_UP];
 		down = keys[KeyEvent.VK_DOWN];
 		left = keys[KeyEvent.VK_LEFT];

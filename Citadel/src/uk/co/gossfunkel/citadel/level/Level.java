@@ -61,10 +61,10 @@ public class Level {
 	public void render(int xScroll, int yScroll, Screen screen) {
 		screen.setOffset(xScroll, yScroll);
 		// cornerpins
-		int x0 = xScroll >> 4;
-		int x1 = (xScroll + screen.getWidth() + 16) >> 4;
-		int y0 = yScroll >> 4;
-		int y1 = (yScroll + screen.getHeight() + 16) >> 4;
+		int x0 = xScroll >> 5;
+		int x1 = (xScroll + screen.getWidth() + 32) >> 5;
+		int y0 = yScroll >> 5;
+		int y1 = (yScroll + screen.getHeight() + 32) >> 5;
 		for (int y = y0; y < y1; y++) {
 			for (int x = x0; x < x1; x++) {
 				if (x < 0 || y < 0 || x >= width || y >= height) 
@@ -134,7 +134,7 @@ public class Level {
 				case 0xFF7F7F00: ttiles[x+y*width] = Tile.rock; break;
 				case 0xFF0000FF: ttiles[x+y*width] = Tile.water; break;
 				case 0xFF700000: trees.add(new Tree(new Coord(x, y), 
-											new Rectangle(x, y+1, 2, 1)));
+											new Rectangle(x, y, 1, 1)));
 				case 0xFF00FF00: ttiles[x+y*width] = Tile.grass; break;
 				default: ttiles[x+y*width] = Tile.voidTile;
 				}

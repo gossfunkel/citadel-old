@@ -12,12 +12,13 @@ public class SpawnLevel extends Level {
 	
 	public SpawnLevel(String path) {
 		super(path);
-		spawnX = 112;
-		spawnY = 50;
+		spawnX = 224;
+		spawnY = 100;
 	}
 
 	// -------------------- methods -------------------------------------------
 	
+	@Override
 	protected void loadLevel(String path) {
 		try {
 			BufferedImage image = ImageIO.read(

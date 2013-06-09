@@ -15,12 +15,16 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import uk.co.gossfunkel.citadel.entity.mob.OnlinePlayer;
+import uk.co.gossfunkel.citadel.entity.settlement.ConstructionSettlement;
 import uk.co.gossfunkel.citadel.entity.settlement.Settlement;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.graphics.WindowHandler;
@@ -32,8 +36,9 @@ import uk.co.gossfunkel.citadel.level.SpawnLevel;
 import uk.co.gossfunkel.citadel.level.TileCoordinate;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
 import uk.co.gossfunkel.citadel.net.GameClient;
-import uk.co.gossfunkel.citadel.net.GameServer;
 import uk.co.gossfunkel.citadel.net.packets.Packet00Login;
+//import java.net.InetAddress;
+//import java.net.UnknownHostException;
 
 /* The game's main running class
  * 
@@ -51,9 +56,10 @@ public class Game extends Canvas implements Runnable {
 	
 	private int xScroll, yScroll, xOffset = 0, yOffset = 0;
 	boolean wasplus = false;
-	//Quadtree quadtree;
+	boolean wasesc  = false;
 	
 	private static List<Settlement> settlements;
+	private static List<ConstructionSettlement> consettlements;
 	private static List<Integer> settx;
 	private static List<Integer> setty;
 	private static List<String> speech;
@@ -89,18 +95,18 @@ public class Game extends Canvas implements Runnable {
 	public JFrame frame;
 	private BufferStrategy bs; // declared here for heap-efficiency reasons
 	private Graphics2D g2d;
+	BufferedImage image2;
 	private AffineTransform transformer;
 	private BufferedImage image 
 		= new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 	private int[] pixels 
 		= ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 	private Screen screen;
+	int type = 0;
 	
 	// net stuff
 	private GameClient client;
 	private Thread clientThread;
-	private GameServer server;
-	private Thread serverThread;
 	private String ip;
 	
 	// -------------------- constructors --------------------------------------
@@ -123,6 +129,7 @@ public class Game extends Canvas implements Runnable {
 		setLevel(new SpawnLevel("/textures/garden.png"));
 		
 		settlements = new ArrayList<Settlement>();
+		consettlements = new ArrayList<ConstructionSettlement>();
 		settx = new ArrayList<Integer>();
 		setty = new ArrayList<Integer>();
 		speech = new ArrayList<String>();
@@ -150,34 +157,33 @@ public class Game extends Canvas implements Runnable {
 	public synchronized void start() {
 		if (running) return;
 		
-		if (JOptionPane.showConfirmDialog(this, "Connect to a server?") == 1) {
-			server = new GameServer(this);
-			serverThread = new Thread(server, "Server");
-			serverThread.start();
-			ip = "localhost";
+		ip = JOptionPane.showInputDialog("Connect to what server?");
 
-			client = new GameClient(this, ip);
-			clientThread = new Thread(client, "Client");
-			clientThread.start();
-		} else {
-			ip = JOptionPane.showInputDialog("Connect to what server?");
+		client = new GameClient(this, ip);
+		clientThread = new Thread(client, "Client");
+		clientThread.start();
 
-			client = new GameClient(this, ip);
-			clientThread = new Thread(client, "Client");
-			clientThread.start();
-
-			player = new OnlinePlayer(level.getSpawnX(), level.getSpawnY(), this, getKey(), getTimer(), username(), null, -1, getLevel());
-			
-			Packet00Login loginPack = new Packet00Login(username(), level.getSpawnX(), level.getSpawnY());
-			if (server != null) server.addConnection(getPlayer(), loginPack);
-			loginPack.writeData(client);
-		}
+		player = new OnlinePlayer(level.getSpawnX(), level.getSpawnY(), this,
+				getKey(), getTimer(), username(), null, -1, getLevel());
+		
+		/*
+		try {
+			address = InetAddress.getByName(ip);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}*/
 		
 		client = new GameClient(this, "localhost");
 		
 		thread = new Thread(this, "Display");
 		thread.start();
 		running = true;
+
+		Packet00Login loginPack = new Packet00Login(username(), level.getSpawnX(), level.getSpawnY());
+		//if (server != null) server.addConnection(new OnlinePlayer(level.getSpawnX(),
+			//	level.getSpawnY(), this, timer, username(), address, 
+				//1042, level), loginPack);
+		loginPack.writeData(client);
 
 		//client.sendData("ping".getBytes());
 	}
@@ -196,13 +202,7 @@ public class Game extends Canvas implements Runnable {
 			}
 			while (getTimer().getDelta() >= 1) {
 				// every time delta goes greater than one, update and supertick
-				if (server != null) {
-					if (server.getPlayer() != null) {
-						update();
-					}
-				} else {
-					update();
-				}
+				update();
 				getTimer().superTick();
 			}
 			if (getTimer().getFPS() > 100) {
@@ -212,13 +212,7 @@ public class Game extends Canvas implements Runnable {
 					System.err.println("Sleeping failed: " + e);
 				}
 			}
-			if (server != null) {
-				if (server.getPlayer() != null) {
-					render();
-				}
-			} else {
-				render();
-			}
+			render(null);
 			if (ticker > 30) {
 				ticker = 0;
 				getTimer().hourTick();
@@ -233,9 +227,6 @@ public class Game extends Canvas implements Runnable {
         WindowEvent wev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 		try {
-			if (server != null) {
-				server.exit();
-			}
 			client.exit();
 			new Thread(){
 	            public void run() {
@@ -262,9 +253,6 @@ public class Game extends Canvas implements Runnable {
 				if (hour == 0) {
 					// new day
 					days++;
-					for (Settlement s : settlements) {
-						s.levelUp();
-					}
 				}
 				globalLight -= 0.05f;
 				globalLight *= 100;
@@ -292,6 +280,7 @@ public class Game extends Canvas implements Runnable {
 			year++;
 			month = 0;
 		}
+		//MOUSE STUFF----------------------------------------------------------
 		if (Mouse.b() == 1 && Mouse.x() > width-100 && Mouse.x() < width-70 && 
 				Mouse.y() > 0 && Mouse.y() < 17) {
 			minimise();
@@ -306,94 +295,123 @@ public class Game extends Canvas implements Runnable {
 			stop();
 		}
 		if (Mouse.b() == 3) {
-			// open right click menu
-		} else if (Mouse.b() == 1) {
-			// close right click menu
-		}
-		getKey().update();
-		if (getKey().plus) {
-			if (!wasplus) {
-				wasplus = true;
-				if (scale < 4) scale += 1;
+			type = 2;
+			for (Settlement s : settlements) {
+				//TODO mouse pos is relative to screen:
+				//		adjust with player pos
+				if (s.x() == TileCoordinate.round(Mouse.x()) 
+						&& s.y() == TileCoordinate.round(Mouse.y())) {
+					System.out.println("right-clicked on settlement");
+				}
 			}
-		}
-		if (getKey().minus) {
-			wasplus = false;
-			if (scale > 1) scale -= 1;
-		}
-		getLevel().update();
-		//quadtree.update();
-		if (server != null) {
-			server.getPlayer().update();
-		} else {
+		} 
+		
+		getKey().update();
+		if (type == 0 || type == 2) { // if the game is running
+			if (getKey().plus) {
+				if (!wasplus) {
+					wasplus = true;
+					if (scale < 4) scale += 1;
+				}
+			} else {
+				wasplus = false;
+			}
+			if (getKey().minus) {
+				wasplus = false;
+				if (scale > 1) scale -= 1;
+			}
+			if (getKey().esc) {
+				if (!wasplus) {
+					wasesc = true;
+					type = 1;
+				}
+			} else wasesc = false;
+			
+			getLevel().update();
 			getPlayer().update();
+			for (int i = 0; i < consettlements.size(); i++) {
+				consettlements.get(i).update();
+			}
+			for (int i = 0; i < settlements.size(); i++) {
+				settlements.get(i).update();
+			}
+		} else if (type == 1) {
+			if (getKey().esc) {
+				if (!wasplus) {
+					wasesc = true;
+					type = 0;
+				}
+			} else wasesc = false;
 		}
-		for (int i = 0; i < settlements.size(); i++) {
-			settlements.get(i).update();
-		}
+		
+		//TODO menu listeners etc (use type to check for menus)
 	}
 
-	public void render() {
+	public void render(Settlement settle) {
 		
+		// pixels to size of image and reset image
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 		
 		bs = getBufferStrategy();
-		if (bs == null) {
-			createBufferStrategy(3); // woo, triple buffering!
+		if (bs == null) { 
+			// create triple buffer
+			createBufferStrategy(3);
 			return;
 		}
 		
-		//transformer.concatenate(at);
-		//transformer.translate(-(r.width/2), -(r.height/2));
+		screen.clear();
+
+		if (type == 0) { //gameplay
+			xScroll = getPlayer().x() - screen.getWidth()/2;
+			yScroll = getPlayer().y() - screen.getHeight()/2;
+			// 	ORDER LAYERS HERE
+			getLevel().render(xScroll*scale, yScroll*scale, screen);	// generate current data
+			for (int i = 0; i < consettlements.size(); i++) {
+				consettlements.get(i).render(screen);
+			}
+			for (int i = 0; i < settlements.size(); i++) {
+				settlements.get(i).render(screen);
+			}
+			getPlayer().render(screen);
+			getLevel().drawPanels(screen); // draw objects to go in front of the player
+		} 
 		
-		screen.clear();		// remove previous data
-		//pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
-		
-		xScroll = getPlayer().x() - screen.getWidth()/2;
-		yScroll = getPlayer().y() - screen.getHeight()/2;
-		// ORDER LAYERS HERE
-		getLevel().render(xScroll*scale, yScroll*scale, screen);	// generate current data
-		for (int i = 0; i < settlements.size(); i++) {
-			settlements.get(i).render(screen);
-		}
-		getPlayer().render(screen);
-		getLevel().drawPanels(screen); // draw objects to go in front of the player
-		
-		// draw minimise, maximise, quit options
 		screen.renderSysMenu();
 		
-		// draw screen.pixels to pixels
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				pixels[x+y*width] = screen.pixels[x+y*screen.getWidth()];
 			} 
 		}
 		
-		//transformer.scale(scale/10, scale/10);
-		//transformer.translate(screen.xOffset*scale,screen.yOffset*scale);
-
-		//RescaleOp op = new RescaleOp(globalLight, 0, null);
-		//image = op.filter(image, null);
-		
-		if (speech.size() == 1)	{
-			image = box(image, height - 50);
-			image = process(image, speech.get(0), height - 50);
-		}
-		if (speech.size() == 2)	{
-			image = box(image, height - 80);
-			image = box(image, height - 50);
-			image = process(image, speech.get(0), height - 80);
-			image = process(image, speech.get(1), height - 50);
-		}
-		if (speech.size() == 3) {
+		switch (speech.size()) {
+		case 3:
 			image = box(image, height - 110);
 			image = box(image, height - 80);
 			image = box(image, height - 50);
-			image = process(image, speech.get(0), height - 110);
-			image = process(image, speech.get(1), height - 80);
-			image = process(image, speech.get(2), height - 50);
+			image = drawConsoleText(image, speech.get(0), height - 110);
+			image = drawConsoleText(image, speech.get(1), height - 80);
+			image = drawConsoleText(image, speech.get(2), height - 50);
+			break;
+		case 2: 
+			image = box(image, height - 80);
+			image = box(image, height - 50);
+			image = drawConsoleText(image, speech.get(0), height - 80);
+			image = drawConsoleText(image, speech.get(1), height - 50);
+			break;
+		case 1: 
+			image = box(image, height - 50);
+			image = drawConsoleText(image, speech.get(0), height - 50);
+			break;
 		}
+		
+		image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		
+		g2d = image2.createGraphics();
+        g2d.setColor(new Color(.15f, .1f, .3f, 1f));
+        g2d.fill(new Rectangle(0, 0, width, height));
+        g2d.dispose(); 
 		
 		switch (scale) {
 		case 1: xOffset = yOffset = 0; break;
@@ -401,14 +419,7 @@ public class Game extends Canvas implements Runnable {
 		//case 3: xOffset = 250;yOffset = 250; break;
 		//case 4: xOffset = 250;yOffset = 250; break;
 		default: xOffset = yOffset = 0; break;
-		}
-		
-		BufferedImage image2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		
-		g2d = image2.createGraphics();
-        g2d.setColor(new Color(.15f, .1f, .3f, 1f));
-        g2d.fill(new Rectangle(0, 0, width, height));
-        g2d.dispose();  
+		} 
 		
 		// draw
 		g2d = (Graphics2D)bs.getDrawGraphics();
@@ -428,8 +439,19 @@ public class Game extends Canvas implements Runnable {
 
 			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, globalLight));  
 			g2d.drawImage(image, xOffset, yOffset, width, height, null);
-			g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f - globalLight));  
-			g2d.drawImage(image2, xOffset, yOffset, width, height, null);
+			if (type == 0) {
+				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f - globalLight));  
+				g2d.drawImage(image2, xOffset, yOffset, width, height, null);
+			} else if (type == 1) {
+				try {
+					g2d.drawImage(ImageIO.read(Launcher.class.getResource
+							("/guis/menu.png")), 0, 0, width, height, null);
+					g2d.drawImage(ImageIO.read(Launcher.class.getResource
+							("/guis/sysgui.png")), width-100, 0, 100, 20, null);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			
 		}
 		g2d.dispose();
@@ -439,7 +461,12 @@ public class Game extends Canvas implements Runnable {
 		Toolkit.getDefaultToolkit().sync();
 	}
 	
-	private BufferedImage process(BufferedImage old, String s, int y) {
+	private BufferedImage drawConsoleText(BufferedImage old, String s, int y) {
+        return drawText(old, s, "Veranda", 20, 25, y);
+    }
+	
+	private BufferedImage drawText(BufferedImage old, String s, String font, 
+			int size, int x, int y) {
         int w = old.getWidth();
         int h = old.getHeight();
         BufferedImage img = new BufferedImage(
@@ -447,8 +474,8 @@ public class Game extends Canvas implements Runnable {
         g2d = img.createGraphics();
         g2d.drawImage(old, 0, 0, null);
         g2d.setPaint(Color.white);
-        g2d.setFont(new Font("Veranda", Font.BOLD, 20));
-        g2d.drawString(s, 25, y);
+        g2d.setFont(new Font(font, Font.BOLD, size));
+        g2d.drawString(s, x, y);
         g2d.dispose();
         return img;
     }
@@ -497,13 +524,20 @@ public class Game extends Canvas implements Runnable {
 							TileCoordinate.scale(ym)).equals(Tile.rock)) {
 				System.out.println("Illegal position");
 			} else {
-				Settlement genset = new Settlement(xm, ym);
-				settlements.add(genset);
-				settx.add(genset.x());
-				setty.add(genset.y());
+				consettlements.add(new ConstructionSettlement(this, xm, ym));
 			} // end inner else
 		} // end outer else
 	} // end build
+	
+	public void removeConSett(ConstructionSettlement cs) {
+		consettlements.remove(cs);
+	}
+	
+	public void addSett(Settlement s) {
+		settlements.add(s);
+		settx.add(s.x());
+		setty.add(s.y());
+	}
 
 	public void say(String str) {
 		speech.add(str);
@@ -546,11 +580,7 @@ public class Game extends Canvas implements Runnable {
 	}
 
 	public OnlinePlayer getPlayer() {
-		if (server == null) {
-			return player;
-		} else {
-			return server.getPlayer();
-		}
+		return player;
 	}
 	
 	public GameClient getClient() {

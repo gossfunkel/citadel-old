@@ -9,6 +9,7 @@ public class Settlement extends Entity {
 	
 	protected Tile sprite;
 	protected int level;
+	protected int xp;
 
 	public Settlement(int x, int y) {
 		System.out.println("Making new Hamlet\nx:" + x + ", y:" + y);
@@ -26,7 +27,10 @@ public class Settlement extends Entity {
 	
 	@Override
 	public void update() {
-		
+		xp++;
+		if (xp > 5000) {
+			levelUp();
+		}
 	}
 	
 	public void levelUp() {

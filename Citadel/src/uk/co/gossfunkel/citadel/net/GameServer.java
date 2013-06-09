@@ -26,19 +26,7 @@ public class GameServer implements Runnable {
 		try {
 			this.socket = new DatagramSocket(1042);
 		} catch (Exception e) {
-			try {
-				this.socket = new DatagramSocket(1043);
-			} catch (Exception e1) {
-				try {
-					this.socket = new DatagramSocket(1044);
-				} catch (Exception e2) {
-					try {
-						this.socket = new DatagramSocket(1045);
-					} catch (Exception e3) {
-						e3.printStackTrace();
-					}
-				}
-			}
+			e.printStackTrace();
 		}
 		connectedPlayers = new ArrayList<OnlinePlayer>();
 		running = true;
@@ -69,8 +57,7 @@ public class GameServer implements Runnable {
 	
 	public void exit() {
 		running = false;
-		Packet01Disconnect p = new Packet01Disconnect(game.username());
-		p.writeData(this);
+		socket.close();
 	}
 	
 	private void parsePacket(byte[] data, InetAddress address, int port) throws UnknownHostException {
@@ -126,9 +113,7 @@ public class GameServer implements Runnable {
 		if (getOnlinePlayer(usnm) != null) {
 			// player exists
 			int index = getOnlinePlayerIndex(usnm);
-			connectedPlayers.get(index).setX(packet.x());
-			connectedPlayers.get(index).setY(packet.y());
-			packet.writeData(this);
+			connectedPlayers.get(index).teleport(packet.x(), packet.y());
 		} else {
 			//TODO deal with it.
 		}
@@ -161,7 +146,6 @@ public class GameServer implements Runnable {
 	private void removeConnection(Packet01Disconnect packet) {
 		OnlinePlayer p = getOnlinePlayer(packet.username());
 		if (p != null) this.connectedPlayers.remove(getOnlinePlayerIndex(p.username()));
-		packet.writeData(this); //broadcast disconnect
 	}
 	
 	private OnlinePlayer getOnlinePlayer(String usnm) {

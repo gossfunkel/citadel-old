@@ -524,7 +524,8 @@ public class Game extends Canvas implements Runnable {
 							TileCoordinate.scale(ym)).equals(Tile.rock)) {
 				System.out.println("Illegal position");
 			} else {
-				consettlements.add(new ConstructionSettlement(this, xm, ym));
+				consettlements.add(
+					new ConstructionSettlement(this, xm, ym, username()));
 			} // end inner else
 		} // end outer else
 	} // end build

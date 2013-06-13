@@ -10,9 +10,11 @@ public class Settlement extends Entity {
 	protected Tile sprite;
 	protected int level;
 	protected int xp;
+	protected String owner;
 
-	public Settlement(int x, int y) {
+	public Settlement(int x, int y, String usnm) {
 		System.out.println("Making new Hamlet\nx:" + x + ", y:" + y);
+		owner = usnm;
 		this.x = TileCoordinate.round(x);
 		this.y = TileCoordinate.round(y);
 		sprite = Tile.hamlet;

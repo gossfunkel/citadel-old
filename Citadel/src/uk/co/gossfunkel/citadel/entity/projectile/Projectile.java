@@ -53,8 +53,8 @@ public abstract class Projectile extends Entity {
 		boolean solid = false;
 		for (int c = 0; c < 4; c++) {
 			//                  num * scale + offset
-			int xt = ((((int)x)+xa)+ c % 2 * 6 + 4) >> 4;
-			int yt = ((((int)y)+ya)+ c / 2 * 7 + 4) >> 4;
+			int xt = ((((int)x)+xa)+ c % 2 * 6 + 4) >> 5;
+			int yt = ((((int)y)+ya)+ c / 2 * 7 + 4) >> 5;
 			if (level.getTile(xt, yt).solid()) solid = true;
 			for (int i = 0; i < level.treeLength(); i++) {
 				Rectangle rect = level.getTree(i).getRect();

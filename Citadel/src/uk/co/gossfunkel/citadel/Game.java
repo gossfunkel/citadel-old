@@ -39,6 +39,7 @@ import uk.co.gossfunkel.citadel.net.GameClient;
 import uk.co.gossfunkel.citadel.net.packets.Packet00Login;
 //import java.net.InetAddress;
 //import java.net.UnknownHostException;
+import uk.co.gossfunkel.citadel.net.packets.Packet03Say;
 
 /* The game's main running class
  * 
@@ -58,8 +59,9 @@ public class Game extends Canvas implements Runnable {
 	boolean wasplus = false;
 	boolean wasesc  = false;
 	
-	private static List<Settlement> settlements;
+	private List<Settlement> settlements;
 	private static List<ConstructionSettlement> consettlements;
+	private List<OnlinePlayer> players;
 	private static List<Integer> settx;
 	private static List<Integer> setty;
 	private static List<String> speech;
@@ -130,6 +132,7 @@ public class Game extends Canvas implements Runnable {
 		
 		settlements = new ArrayList<Settlement>();
 		consettlements = new ArrayList<ConstructionSettlement>();
+		players = new ArrayList<OnlinePlayer>();
 		settx = new ArrayList<Integer>();
 		setty = new ArrayList<Integer>();
 		speech = new ArrayList<String>();
@@ -165,6 +168,8 @@ public class Game extends Canvas implements Runnable {
 
 		player = new OnlinePlayer(level.getSpawnX(), level.getSpawnY(), this,
 				getKey(), getTimer(), username(), null, -1, getLevel());
+		
+		players.add(player);
 		
 		/*
 		try {
@@ -542,6 +547,8 @@ public class Game extends Canvas implements Runnable {
 
 	public void say(String str) {
 		speech.add(str);
+		Packet03Say pack = new Packet03Say(username(), str);
+		pack.writeData(client);
 		//System.out.println(str);
 		if (speech.size() > 3) {
 			speech.remove(0);
@@ -616,6 +623,18 @@ public class Game extends Canvas implements Runnable {
 
 	public Keyboard getInput() {
 		return key;
+	}
+
+	public void addPlayer(OnlinePlayer onlinePlayer) {
+		players.add(onlinePlayer);
+	}
+	
+	public void addPlayerList(ArrayList<OnlinePlayer> players) {
+		this.players.addAll(players);
+	}
+
+	public void addSettList(ArrayList<Settlement> settlements) {
+		this.settlements.addAll(settlements);
 	}
 
 }

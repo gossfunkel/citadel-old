@@ -14,6 +14,7 @@ import uk.co.gossfunkel.citadel.net.packets.Packet.PacketTypes;
 import uk.co.gossfunkel.citadel.net.packets.Packet00Login;
 import uk.co.gossfunkel.citadel.net.packets.Packet01Disconnect;
 import uk.co.gossfunkel.citadel.net.packets.Packet02Move;
+import uk.co.gossfunkel.citadel.net.packets.Packet10LoginResponse;
 
 public class GameClient implements Runnable {
 	
@@ -50,7 +51,7 @@ public class GameClient implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//System.out.println("SERVER> " + new String(packet.getData()));
+			System.out.println("SERVER> " + new String(packet.getData()));
 			parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
 		}
 	}
@@ -72,11 +73,16 @@ public class GameClient implements Runnable {
 		switch (type) {
 		case LOGIN: 
 			Packet00Login packet = new Packet00Login(data);
-			System.out.println(packet.username() + " has joined the game.");
 			OnlinePlayer player = new OnlinePlayer(packet.x(), packet.y(), game,
 					game.getTimer(), ((Packet00Login)packet).username(), 
 						address, port, game.getLevel());
 			if (player != null) game.getLevel().addEntity(player);
+			break;
+		case LOGINRESPONSE:
+			Packet10LoginResponse packet10 = new Packet10LoginResponse(data, 
+														this, address, port);
+			game.addPlayerList(packet10.getPlayers());
+			game.addSettList(packet10.getSettlements());
 			break;
 		case DISCONNECT:
 			Packet01Disconnect packet1 = new Packet01Disconnect(data);
@@ -103,6 +109,10 @@ public class GameClient implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public OnlinePlayer makePlayer(int x, int y, String usnm, InetAddress ip, int port) {
+		return new OnlinePlayer(x, y, game, game.getTimer(), usnm, ip, port, game.getLevel());
 	}
 
 }

@@ -121,7 +121,7 @@ public class Player extends Mob {
 									shooting = true;
 									mining = false;
 								}
-								level.getTree(rect).onClick();
+								//level.getTree(rect).onClick();
 							} //end contains if
 						} //end null if
 					} //end rect for

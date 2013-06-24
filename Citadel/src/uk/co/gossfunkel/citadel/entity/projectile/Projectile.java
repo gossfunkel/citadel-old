@@ -58,7 +58,10 @@ public abstract class Projectile extends Entity {
 			if (level.getTile(xt, yt).solid()) solid = true;
 			for (int i = 0; i < level.treeLength(); i++) {
 				Rectangle rect = level.getTree(i).getRect();
-				if (rect.contains(xt, yt)) solid = true;
+				if (rect.contains(xt, yt)) {
+					solid = true;
+					level.getTree(i).damage();
+				}
 			}
 		}
 		return solid;

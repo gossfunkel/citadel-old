@@ -3,12 +3,16 @@ package uk.co.gossfunkel.citadel.level;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+
+import uk.co.gossfunkel.citadel.entity.AppleSprite;
 import uk.co.gossfunkel.citadel.entity.Entity;
+import uk.co.gossfunkel.citadel.entity.Tree;
+import uk.co.gossfunkel.citadel.entity.exporbs.ExpOrb;
+import uk.co.gossfunkel.citadel.entity.exporbs.GreenExpOrb;
+import uk.co.gossfunkel.citadel.entity.mob.OnlinePlayer;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.level.tile.Coord;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
-import uk.co.gossfunkel.citadel.entity.Tree;
-import uk.co.gossfunkel.citadel.entity.mob.OnlinePlayer;
 
 public class Level {
 	
@@ -20,6 +24,7 @@ public class Level {
 	protected static Tile[] ttiles;
 	protected List<Entity> entities = new ArrayList<Entity>();
 	protected static List<Tree> trees = new ArrayList<Tree>();
+	protected static List<ExpOrb> orbs = new ArrayList<ExpOrb>();
 	
 	// -------------------- constructors --------------------------------------
 	
@@ -56,6 +61,9 @@ public class Level {
 		for (int i = 0; i < ttiles.length; i++) {
 			ttiles[i].update();
 		}
+		for (int i = 0; i < orbs.size(); i++) {
+			orbs.get(i).update();
+		}
 	}
 	
 	public void render(int xScroll, int yScroll, Screen screen) {
@@ -74,14 +82,17 @@ public class Level {
 					ttiles[x+y*width].render(x, y, screen);
 			} // end x for
 		} // end y for} 
-		for (int i = 0; i < getEntities().size(); i++) {
-			getEntities().get(i).render(screen);
-		}
 	}
 	
 	public void drawPanels(Screen screen) {
 		for (int i = 0; i < trees.size(); i++) {
-			trees.get(i).render(trees.get(i).getCoord(), screen, this);
+			trees.get(i).render(screen, this);
+		}
+		for (int i = 0; i < getEntities().size(); i++) {
+			entities.get(i).render(screen);
+		}
+		for (int i = 0; i < orbs.size(); i++) {
+			orbs.get(i).render(screen);
 		}
 	}
 	
@@ -288,12 +299,55 @@ public class Level {
 		return this.entities;
 	}
 	
+	public synchronized void dropExpOrbs(Coord coord, int exp) {
+		orbs.add(new GreenExpOrb(TileCoordinate.reverseScale(coord.x()), 
+				TileCoordinate.reverseScale(coord.y()), this, exp/3));
+		orbs.add(new GreenExpOrb(TileCoordinate.reverseScale(coord.x()), 
+				TileCoordinate.reverseScale(coord.y()), this, exp/3));
+		orbs.add(new GreenExpOrb(TileCoordinate.reverseScale(coord.x()), 
+				TileCoordinate.reverseScale(coord.y()), this, exp/3));
+	}
+	
 	public int getSpawnX() {
 		return spawnX;
 	}
 	
 	public int getSpawnY() {
 		return spawnY;
+	}
+
+	public ExpOrb getOrb(int i) {
+		return orbs.get(i);
+	}
+
+	public int orbsLength() {
+		return orbs.size();
+	}
+
+	public void removeOrb(ExpOrb orb) {
+		orbs.remove(orb);
+	}
+
+	public void treeDeath(Coord coord) {
+		dropExpOrbs(coord, 30);
+		dropApple(coord);
+		removePanel(coord);
+	}
+
+	private void dropApple(Coord coord) {
+		entities.add(new AppleSprite(coord));
+	}
+
+	public int entitiesLength() {
+		return entities.size();
+	}
+
+	public Entity getEntity(int i) {
+		return entities.get(i);
+	}
+
+	public void removeEntity(int i) {
+		entities.get(i).remove();
 	}
 
 }

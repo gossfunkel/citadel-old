@@ -35,6 +35,9 @@ public class Sprite {
 	public static Sprite movvillage   = new Sprite(32, 1, 3, SpriteSheet.tiles, "VillageTile-MouseOver");
 	public static Sprite movcity 	  = new Sprite(32, 2, 3, SpriteSheet.tiles, "CityTile-MouseOver");
 	
+	// exp orbs ---
+	public static Sprite greenExpOrb = new Sprite(10, 0, 0, SpriteSheet.exporbs, "GreenExperienceOrb");
+	
 	// mobs ---
 	
 	// player face south
@@ -68,8 +71,8 @@ public class Sprite {
 	//TODO: add mining sprites
 
 	// items ---
-	
 	public static Sprite fireball = new Sprite(16, 0, 0, SpriteSheet.items, "Fireball");
+	public static Sprite apple = new Sprite(16, 1, 0, SpriteSheet.items, "Apple");
 	
 	// -------------------- constructors --------------------------------------
 	

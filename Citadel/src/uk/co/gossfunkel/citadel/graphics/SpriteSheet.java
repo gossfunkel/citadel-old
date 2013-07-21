@@ -22,9 +22,11 @@ public class SpriteSheet {
 	public static SpriteSheet mobs32
 		= new SpriteSheet("/32/mobs.png", 256);
 	public static SpriteSheet items
-	= new SpriteSheet("/items.png", 256);
+		= new SpriteSheet("/items.png", 256);
 	public static SpriteSheet gui 
 		= new SpriteSheet("/guis/sysgui.png", 100);
+	public static SpriteSheet exporbs
+		= new SpriteSheet("/exporbs.png", 30);
 	
 	// -------------------- constructors --------------------------------------
 	

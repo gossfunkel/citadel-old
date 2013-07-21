@@ -21,7 +21,7 @@ public class Tree {
 		boundingBox = bbox;
 	}
 	
-	public void render(Coord coord, Screen screen, Level level) {
+	public void render(Screen screen, Level level) {
 		tile.render(coord, screen);
 		this.level = level;
 	}
@@ -47,8 +47,7 @@ public class Tree {
 	}
 	
 	public void collapse() {
-		// drop apple
-		level.removePanel(coord);
+		level.treeDeath(coord);
 	}
 
 }

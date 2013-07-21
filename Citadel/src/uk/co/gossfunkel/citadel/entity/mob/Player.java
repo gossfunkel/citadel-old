@@ -3,14 +3,18 @@ package uk.co.gossfunkel.citadel.entity.mob;
 import java.awt.Rectangle;
 import uk.co.gossfunkel.citadel.level.Level;
 import java.util.ArrayList;
+import java.util.List;
 
 import uk.co.gossfunkel.citadel.Game;
 import uk.co.gossfunkel.citadel.Timer;
+import uk.co.gossfunkel.citadel.entity.AppleSprite;
 import uk.co.gossfunkel.citadel.entity.Entity;
 import uk.co.gossfunkel.citadel.graphics.Screen;
 import uk.co.gossfunkel.citadel.graphics.Sprite;
 import uk.co.gossfunkel.citadel.input.Keyboard;
 import uk.co.gossfunkel.citadel.input.Mouse;
+import uk.co.gossfunkel.citadel.item.Apple;
+import uk.co.gossfunkel.citadel.item.Item;
 import uk.co.gossfunkel.citadel.level.TileCoordinate;
 import uk.co.gossfunkel.citadel.level.tile.Coord;
 import uk.co.gossfunkel.citadel.level.tile.Tile;
@@ -21,19 +25,25 @@ public class Player extends Mob {
 	// -------------------- variables -----------------------------------------
 	
 	protected Game game;
-	private Keyboard input;
-	private Timer timer;
-	private Screen screen;
-	protected final String username;
-	int xa, ya;
-	Sprite sprite;
-	boolean flip;
-	boolean speaking = false;
-	boolean mining = false;
-	String saying;
-	int fire = 10;
+	protected Keyboard input;
+	protected Timer timer;
+	protected Screen screen;
 	
-	private boolean bPress = false, tPress = false;
+	protected final String username;
+	protected Sprite sprite;
+	protected int plevel;
+	protected int exp;
+	protected Rectangle rectangle;
+	protected List<Item> inventory;
+	
+	protected int xa, ya;
+	protected boolean flip;
+	protected boolean speaking = false;
+	protected boolean mining = false;
+	protected String saying;
+	protected int fire = 10;
+	
+	protected boolean bPress = false, tPress = false;
 
 	// -------------------- constructors --------------------------------------
 	
@@ -43,9 +53,8 @@ public class Player extends Mob {
 		this.timer = timer;
 		this.level = level;
 		this.username = username;
-		sprite = Sprite.playerS;
-		SIZE = sprite.getSIZE();
-		nearEntities = new ArrayList<Entity>();
+		plevel = 0;
+		exp = 0;
 		
 		init();
 	}
@@ -55,11 +64,33 @@ public class Player extends Mob {
 		this(game, input, timer, username, level);
 		teleport(x, y); 
 	}
+	
+	public Player(Game game, Keyboard input, Timer timer, String username, Level level, int plevel, int exp) {
+		this.game = game;
+		this.input = input;
+		this.timer = timer;
+		this.level = level;
+		this.username = username;
+		this.plevel = plevel;
+		this.exp = exp;
+		
+		init();
+	}
+	
+	public Player(int x, int y, Game game, Keyboard input, Timer timer, String username, Level level, int plevel, int exp) {
+		this(game, input, timer, username, level, plevel, exp);
+		teleport(x, y);
+	}
 
 	// -------------------- methods -------------------------------------------
 	
 	public void init() {
 		level.addEntity(this);
+		sprite = Sprite.playerS;
+		SIZE = sprite.getSIZE();
+		rectangle = new Rectangle(x, y, SIZE, SIZE);
+		nearEntities = new ArrayList<Entity>();
+		inventory = new ArrayList<Item>();
 		//if (game.server != null) game.server.addConnection((OnlinePlayer)player);
 	}
 	
@@ -130,6 +161,23 @@ public class Player extends Mob {
 				} //end mouse if
 			} //end not speaking else
 		} //end null input if
+		for (int i = 0; i < level.orbsLength(); i++) {
+			Rectangle rect = level.getOrb(i).getRect();
+			if (rect.intersects(getRect())) {
+				exp += level.getOrb(i).getVal();
+				level.removeOrb(level.getOrb(i));
+			}
+		}
+		for (int i = 0; i < level.entitiesLength(); i++) {
+			if (level.getEntity(i).getClass() == AppleSprite.class) {
+				Rectangle rect = ((AppleSprite)level.getEntity(i)).getRect();
+				if (rect.intersects(getRect())) {
+					inventory.add(new Apple());
+					level.removeEntity(i);
+				}
+			}
+		}
+		updateLevel();
 		clear();
 	} // end update
 
@@ -138,7 +186,7 @@ public class Player extends Mob {
 		if (fire > 10) {
 			fire = 0;
 			shoot(x, y, Math.atan2((Mouse.y() - (Game.getWindowHeight())/2), 
-					(Mouse.x() - (Game.getWindowWidth())/2)));
+									(Mouse.x() - (Game.getWindowWidth())/2)));
 		}
 	}
 	
@@ -245,6 +293,22 @@ public class Player extends Mob {
 	
 	public String username() {
 		return username;
+	}
+	
+	public void getExp(int exp) {
+		this.exp += exp;
+	}
+	
+	public void updateLevel() {
+		if (exp > plevel*100) {
+			plevel++;
+			exp = 0;
+		}
+	}
+	
+	public Rectangle getRect() {
+		rectangle = new Rectangle(x, y, SIZE, SIZE);
+		return rectangle;
 	}
 	
 	public String toString() {

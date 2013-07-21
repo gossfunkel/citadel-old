@@ -31,6 +31,10 @@ public class TileCoordinate {
 		return round(n)>>5;
 	}
 	
+	public static int reverseScale(int n) {
+		return n<<5;
+	}
+	
 	public int getX() {
 		return x;
 	}

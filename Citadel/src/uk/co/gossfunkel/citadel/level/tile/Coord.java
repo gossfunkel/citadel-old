@@ -38,4 +38,9 @@ public class Coord {
     public int yc() {
     	return y+1;
     }
+    
+    @Override
+    public String toString() {
+		return ("COORD x:" + x + ", y:" + y);
+    }
 }
